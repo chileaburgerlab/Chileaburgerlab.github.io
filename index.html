@@ -309,7 +309,8 @@ function renderOptions(){
       <div class="nm" style="display:inline;">${s}</div>
     </label>`).join("");
   document.querySelectorAll(".opt").forEach(el=>{
-    el.addEventListener("click", ()=>{
+    el.addEventListener("click", (e)=>{
+      e.preventDefault(); // evita que el <label> re-dispare el toque y anule la selección
       const kind = el.dataset.kind, id = el.dataset.id;
       if(kind==="burger"){ selBurger = id; }
       if(kind==="extra"){ selExtras.has(id) ? selExtras.delete(id) : selExtras.add(id); }
