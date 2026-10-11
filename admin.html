@@ -55,6 +55,9 @@ input[type=file]{padding:10px;}
 .foto-cell button{position:absolute; top:6px; right:6px; width:28px; height:28px;
   border-radius:50%; border:none; background:rgba(0,0,0,.65); color:#fff;
   font-size:15px; cursor:pointer; line-height:1;}
+.foto-badge{position:absolute; left:6px; bottom:6px; background:rgba(0,0,0,.65);
+  color:var(--gold-soft); font-size:10px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; padding:4px 8px; border-radius:99px;}
 .back{display:inline-block; margin-top:22px; color:var(--muted); font-size:13px; text-decoration:none;}
 .prog{font-size:13px; color:var(--gold-soft); margin:8px 0;}
 </style>
@@ -93,7 +96,12 @@ input[type=file]{padding:10px;}
       <h2>Paso 2 · Subir fotos</h2>
       <p>Elige una o varias fotos de tus burgers. Usa fotos claras, con buena luz.</p>
       <input type="file" id="fileInput" accept="image/*" multiple>
-      <button class="btn" id="uploadBtn" style="width:100%;">Subir a la galería</button>
+      <label for="destSelect" style="display:block;font-size:13px;color:var(--muted);margin:2px 0 6px;">¿Dónde se muestra esta foto?</label>
+      <select id="destSelect" style="width:100%;background:var(--surface2);border:1.5px solid var(--line);border-radius:10px;color:var(--text);padding:12px;font-size:15px;font-family:inherit;margin-bottom:10px;">
+        <option value="galeria">En la galería en movimiento</option>
+        <option value="menu">En el menú</option>
+      </select>
+      <button class="btn" id="uploadBtn" style="width:100%;">Subir foto(s)</button>
       <div class="prog" id="prog"></div>
       <div class="err" id="upErr"></div>
       <div class="okmsg" id="upOk"></div>
@@ -205,10 +213,13 @@ async function loadFotos(){
       d.className = "foto-cell";
       const img = document.createElement("img");
       img.src = f.url; img.alt = f.titulo || ("Foto " + (i+1)); img.loading = "lazy";
+      const badge = document.createElement("span");
+      badge.className = "foto-badge";
+      badge.textContent = (f.seccion === "menu") ? "Menú" : "Galería";
       const x = document.createElement("button");
       x.textContent = "×"; x.setAttribute("aria-label","Quitar foto");
       x.addEventListener("click", ()=>removeFoto(i));
-      d.appendChild(img); d.appendChild(x);
+      d.appendChild(img); d.appendChild(badge); d.appendChild(x);
       grid.appendChild(d);
     });
   }catch(e){
@@ -243,7 +254,7 @@ $("uploadBtn").addEventListener("click", async ()=>{
       const b64 = await fileToB64(file);
       const name = safeName(file.name);
       await gh("PUT","fotos/"+name,{message:"Subir foto "+name, content:b64});
-      list.push({url:"fotos/"+name, titulo:"CHILEA BURGER LAB"});
+      list.push({url:"fotos/"+name, titulo:"CHILEA BURGER LAB", seccion:$("destSelect").value});
     }
     $("prog").textContent = "Actualizando galería…";
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(list))));
