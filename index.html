@@ -125,15 +125,6 @@ label.f{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px;}
 .pickup{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
   padding:18px; margin-top:18px; font-size:14px; color:var(--muted);}
 .pickup b{color:var(--text);}
-.recibos-list{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
-.recibo-item{display:flex; align-items:center; justify-content:space-between; gap:8px;
-  background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:10px 12px;
-  font-size:13.5px;}
-.recibo-item .rb small{display:block; color:var(--muted); font-size:11.5px;}
-.recibo-item .acts{display:flex; gap:6px;}
-.mini{border:1px solid var(--line); background:transparent; color:var(--text);
-  border-radius:8px; padding:7px 10px; font-size:12.5px; cursor:pointer;}
-.mini:hover{border-color:var(--gold);}
 .empty{color:var(--muted); font-size:13.5px;}
 /* Galería */
 .galeria{margin:26px 0 4px;}
@@ -153,8 +144,13 @@ label.f{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px;}
 .gal-item img{width:100%; height:100%; object-fit:cover; display:block;}
 .gal-item.has-foto{padding:0; border-style:solid; gap:0;}
 .gal-item.has-foto .ph{display:none;}
+.gal-dots{display:flex; gap:8px; justify-content:center; margin:2px 0 6px;}
+.gal-dots button{width:8px; height:8px; border-radius:99px; border:none;
+  background:#3a3a44; cursor:pointer; padding:0; transition:.2s;}
+.gal-dots button.on{background:var(--gold); width:24px;}
 @media(min-width:900px){
   .gal-scroll{grid-auto-flow:row; grid-template-columns:repeat(4,1fr); overflow:visible;}
+  .gal-dots{display:none;}
 }
 footer{margin-top:34px; text-align:center; color:var(--muted); font-size:12.5px;}
 footer img{height:52px; opacity:.95;}
@@ -217,6 +213,7 @@ footer img{height:52px; opacity:.95;}
         </span>
       </div>
     </div>
+    <div class="gal-dots" id="galDots"></div>
   </section>
 
   <div class="grid">
@@ -252,12 +249,6 @@ footer img{height:52px; opacity:.95;}
         <input type="tel" id="cphone" placeholder="(787) 000-0000" autocomplete="tel">
         <button class="btn btn-pink" id="confirmBtn">Ver recibo y pagar</button>
         <div class="hint">Al confirmar verás tu <b>recibo digital</b> con el total, el botón de <b>pagar por ATH&nbsp;Móvil</b> y la opción de <b>descargarlo en PDF</b>.</div>
-      </section>
-
-      <section class="card" id="sec-recibos" style="margin-top:18px;">
-        <h2>Mis recibos</h2>
-        <p class="sub">Tus pedidos anteriores en este teléfono. Tócalo para verlo o descargarlo de nuevo.</p>
-        <div class="recibos-list" id="recibosList"><span class="empty">Aún no tienes recibos guardados.</span></div>
       </section>
 
       <div class="pickup">
@@ -342,7 +333,6 @@ const MENU = {
 
 const $ = id => document.getElementById(id);
 const money = n => "$" + n.toFixed(2);
-const LS_KEY = "chilea_recibos_v1";
 
 let cart = [];               // líneas del pedido actual
 let selBurger = MENU.burgers[0].id;
@@ -491,7 +481,6 @@ $("confirmBtn").addEventListener("click",()=>{
   const name = $("cname").value.trim();
   if(!name){ alert("Escribe tu nombre para identificar el pedido."); $("cname").focus(); return; }
   const order = buildOrder();
-  saveReceipt(order);
   showReceipt(order);
   cart = []; renderCart();
 });
@@ -553,36 +542,46 @@ Listo en ~${CONFIG.prepMinutes} min (pickup)`;
   window.open("https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg), "_blank");
 });
 
-/* ---------- mis recibos (guardados en este teléfono) ---------- */
-function loadReceipts(){
-  try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
-  catch(e){ return []; }
-}
-function saveReceipt(order){
-  try{
-    const all = loadReceipts();
-    all.unshift(order);
-    localStorage.setItem(LS_KEY, JSON.stringify(all.slice(0, 30)));
-    renderRecibos();
-  }catch(e){ /* almacenamiento no disponible: se continúa sin guardar */ }
-}
-function renderRecibos(){
-  const all = loadReceipts();
-  const box = $("recibosList");
-  if(!all.length){ box.innerHTML = '<span class="empty">Aún no tienes recibos guardados.</span>'; return; }
-  box.innerHTML = "";
-  all.forEach((o,i)=>{
-    const div = document.createElement("div");
-    div.className = "recibo-item";
-    div.innerHTML = `<div class="rb"><b>${o.number}</b> · ${money(o.total)}
-      <small>${fmtDate(o.date)} · ${o.customer}</small></div>
-      <div class="acts"><button class="mini" data-a="ver">Ver</button>
-      <button class="mini" data-a="pdf">PDF</button></div>`;
-    div.querySelector('[data-a="ver"]').addEventListener("click",()=>showReceipt(o));
-    div.querySelector('[data-a="pdf"]').addEventListener("click",()=>{ currentOrder = o; $("dlPdf").click(); });
-    box.appendChild(div);
+/* ---------- galería: deslizamiento automático ---------- */
+(function(){
+  const track = document.querySelector(".gal-scroll");
+  if(!track || !track.children.length) return;
+  const items = Array.from(track.children);
+  const dotsBox = $("galDots");
+  items.forEach((_, i)=>{
+    const d = document.createElement("button");
+    d.type = "button";
+    d.setAttribute("aria-label", "Ver foto " + (i+1));
+    d.addEventListener("click", ()=>go(i, true));
+    dotsBox.appendChild(d);
   });
-}
+  const dots = Array.from(dotsBox.children);
+  let idx = 0, timer = null, touching = false;
+  function paint(){
+    dots.forEach((d, j)=>d.classList.toggle("on", j===idx));
+  }
+  function go(i, manual){
+    idx = (i + items.length) % items.length;
+    track.scrollTo({left: items[idx].offsetLeft - track.offsetLeft, behavior:"smooth"});
+    paint();
+    if(manual) restart();
+  }
+  function restart(){
+    if(timer) clearInterval(timer);
+    timer = setInterval(()=>{ if(!touching && !document.hidden) go(idx+1); }, 4000);
+  }
+  track.addEventListener("pointerdown", ()=>{ touching = true; }, {passive:true});
+  window.addEventListener("pointerup", ()=>{ touching = false; }, {passive:true});
+  track.addEventListener("scroll", ()=>{
+    let best = 0, bestD = Infinity;
+    items.forEach((it, i)=>{
+      const d = Math.abs(it.offsetLeft - track.offsetLeft - track.scrollLeft);
+      if(d < bestD){ bestD = d; best = i; }
+    });
+    if(best !== idx){ idx = best; paint(); }
+  }, {passive:true});
+  go(0); restart();
+})();
 
 /* ---------- hoja de Google: el negocio maneja su menú sin depender de nadie ----------
    La hoja "Menú CHILEA" (del hermano) con pestañas:
@@ -665,7 +664,6 @@ $("pickupAddr").textContent = CONFIG.pickupAddress;
 $("pickupHours").textContent = CONFIG.pickupHours;
 renderOptions();
 renderCart();
-renderRecibos();
 loadFromSheet();
 </script>
 </body>
