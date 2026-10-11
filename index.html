@@ -135,6 +135,27 @@ label.f{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px;}
   border-radius:8px; padding:7px 10px; font-size:12.5px; cursor:pointer;}
 .mini:hover{border-color:var(--gold);}
 .empty{color:var(--muted); font-size:13.5px;}
+/* Galería */
+.galeria{margin:26px 0 4px;}
+.galeria h2{margin:0 0 4px; font-size:19px;}
+.galeria p.sub{color:var(--muted); font-size:13px; margin:0 0 14px;}
+.gal-scroll{display:grid; grid-auto-flow:column; grid-auto-columns:min(76vw,300px);
+  gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 2px 10px;
+  -webkit-overflow-scrolling:touch; scrollbar-width:thin;}
+.gal-item{scroll-snap-align:start; border-radius:14px; overflow:hidden;
+  border:1.5px dashed #3d3d48; background:var(--surface); aspect-ratio:4/3;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:8px; color:var(--muted); text-align:center; padding:12px;}
+.gal-item svg{width:36px; height:36px; stroke:var(--gold); opacity:.85;}
+.gal-item .cap{font-size:14px; font-weight:700; color:var(--text);}
+.gal-item .soon{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);}
+/* Cuando lleguen las fotos reales, cada .gal-item llevará un <img> así: */
+.gal-item img{width:100%; height:100%; object-fit:cover; display:block;}
+.gal-item.has-foto{padding:0; border-style:solid; gap:0;}
+.gal-item.has-foto .ph{display:none;}
+@media(min-width:900px){
+  .gal-scroll{grid-auto-flow:row; grid-template-columns:repeat(4,1fr); overflow:visible;}
+}
 footer{margin-top:34px; text-align:center; color:var(--muted); font-size:12.5px;}
 footer img{height:52px; opacity:.95;}
 </style>
@@ -156,6 +177,45 @@ footer img{height:52px; opacity:.95;}
       <span class="step"><b>1</b>Arma tu hamburguesa</span>
       <span class="step"><b>2</b>Tus datos</span>
       <span class="step"><b>3</b>Recibo y pago</span>
+    </div>
+  </section>
+
+  <section class="galeria" id="galeria">
+    <h2>Nuestras burgers</h2>
+    <p class="sub">Del lab directo a tu mesa. Desliza para verlas.</p>
+    <div class="gal-scroll">
+      <!-- FOTO 1: La Clásica — reemplazar el contenido de .ph con <img src="fotos/clasica.jpg" alt="La Clásica"> y añadir clase has-foto al .gal-item -->
+      <div class="gal-item" data-foto="clasica">
+        <span class="ph" style="display:contents;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="cap">La Clásica</div>
+          <div class="soon">Foto próximamente</div>
+        </span>
+      </div>
+      <!-- FOTO 2: Doble Carne -->
+      <div class="gal-item" data-foto="doble">
+        <span class="ph" style="display:contents;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="cap">Doble Carne</div>
+          <div class="soon">Foto próximamente</div>
+        </span>
+      </div>
+      <!-- FOTO 3: La Chilea de la Casa -->
+      <div class="gal-item" data-foto="casa">
+        <span class="ph" style="display:contents;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="cap">La Chilea de la Casa</div>
+          <div class="soon">Foto próximamente</div>
+        </span>
+      </div>
+      <!-- FOTO 4: Del lab a tu mesa (foto del proceso / cocina) -->
+      <div class="gal-item" data-foto="proceso">
+        <span class="ph" style="display:contents;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="cap">Hechas al momento</div>
+          <div class="soon">Foto próximamente</div>
+        </span>
+      </div>
     </div>
   </section>
 
