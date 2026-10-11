@@ -614,8 +614,13 @@ async function loadFotos(){
     if(!r.ok) return;
     const list = await r.json();
     if(Array.isArray(list) && list.length){
-      galItems = list.map(f=>({url:f.url, titulo:f.titulo||"CHILEA BURGER LAB"}));
-      renderGalMarquee();
+      /* La galería muestra las fotos de sección "galeria" (o sin sección);
+         las de "menu" las usará la sección del menú cuando exista. */
+      const gal = list.filter(f=>!f.seccion || f.seccion==="galeria");
+      if(gal.length){
+        galItems = gal.map(f=>({url:f.url, titulo:f.titulo||"CHILEA BURGER LAB"}));
+        renderGalMarquee();
+      }
     }
   }catch(e){}
 }
