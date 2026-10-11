@@ -6,6 +6,14 @@
 <title>CHILEA BURGER LAB — Ordena para pickup</title>
 <meta name="description" content="Arma tu hamburguesa, paga por ATH Móvil y recógela. CHILEA BURGER LAB.">
 <link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0c0e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CHILEA">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
@@ -126,32 +134,24 @@ label.f{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px;}
   padding:18px; margin-top:18px; font-size:14px; color:var(--muted);}
 .pickup b{color:var(--text);}
 .empty{color:var(--muted); font-size:13.5px;}
-/* Galería */
-.galeria{margin:26px 0 4px;}
-.galeria h2{margin:0 0 4px; font-size:19px;}
-.galeria p.sub{color:var(--muted); font-size:13px; margin:0 0 14px;}
-.gal-scroll{display:grid; grid-auto-flow:column; grid-auto-columns:min(76vw,300px);
-  gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 2px 10px;
-  -webkit-overflow-scrolling:touch; scrollbar-width:thin;}
-.gal-item{scroll-snap-align:start; border-radius:14px; overflow:hidden;
-  border:1.5px dashed #3d3d48; background:var(--surface); aspect-ratio:4/3;
+/* Galería: tira continua en movimiento (estilo auspiciadores del Vacilón) */
+.gal-marquee{overflow:hidden; margin-top:4px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);}
+.gal-mtrack{display:flex; width:max-content; animation:galScroll 26s linear infinite;}
+.gal-mset{display:flex; gap:14px; padding-right:14px;}
+.gal-half{display:flex; gap:14px; padding-right:14px; flex:0 0 auto;}
+.gal-card{flex:0 0 auto; width:min(64vw,280px); aspect-ratio:4/3; border-radius:14px;
+  overflow:hidden; border:1.5px dashed #3d3d48; background:var(--surface);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:8px; color:var(--muted); text-align:center; padding:12px;}
-.gal-item svg{width:36px; height:36px; stroke:var(--gold); opacity:.85;}
-.gal-item .cap{font-size:14px; font-weight:700; color:var(--text);}
-.gal-item .soon{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);}
-/* Cuando lleguen las fotos reales, cada .gal-item llevará un <img> así: */
-.gal-item img{width:100%; height:100%; object-fit:cover; display:block;}
-.gal-item.has-foto{padding:0; border-style:solid; gap:0;}
-.gal-item.has-foto .ph{display:none;}
-.gal-dots{display:flex; gap:8px; justify-content:center; margin:2px 0 6px;}
-.gal-dots button{width:8px; height:8px; border-radius:99px; border:none;
-  background:#3a3a44; cursor:pointer; padding:0; transition:.2s;}
-.gal-dots button.on{background:var(--gold); width:24px;}
-@media(min-width:900px){
-  .gal-scroll{grid-auto-flow:row; grid-template-columns:repeat(4,1fr); overflow:visible;}
-  .gal-dots{display:none;}
-}
+.gal-card svg{width:34px; height:34px; stroke:var(--gold); opacity:.85;}
+.gal-card .cap{font-size:14px; font-weight:700; color:var(--text);}
+.gal-card .soon{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);}
+.gal-card.has-foto{padding:0; border-style:solid; border-color:var(--line);}
+.gal-card.has-foto img{width:100%; height:100%; object-fit:cover; display:block;}
+@keyframes galScroll{to{transform:translateX(-50%);}}
+.gal-mtrack.paused{animation-play-state:paused;}
 footer{margin-top:44px; text-align:center; color:var(--muted); font-size:12.5px;
   padding:30px 16px 46px; border-top:1px solid var(--line);}
 footer img{height:52px; opacity:.95;}
@@ -223,41 +223,11 @@ footer .adminlink:hover{color:var(--muted);}
       <h2>Nuestras burgers</h2>
       <p>Del lab directo a tu mesa. Desliza para verlas.</p>
     </div>
-    <div class="gal-scroll">
-      <!-- FOTO 1: La Clásica — reemplazar el contenido de .ph con <img src="fotos/clasica.jpg" alt="La Clásica"> y añadir clase has-foto al .gal-item -->
-      <div class="gal-item" data-foto="clasica">
-        <span class="ph" style="display:contents;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <div class="cap">La Clásica</div>
-          <div class="soon">Foto próximamente</div>
-        </span>
-      </div>
-      <!-- FOTO 2: Doble Carne -->
-      <div class="gal-item" data-foto="doble">
-        <span class="ph" style="display:contents;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <div class="cap">Doble Carne</div>
-          <div class="soon">Foto próximamente</div>
-        </span>
-      </div>
-      <!-- FOTO 3: La Chilea de la Casa -->
-      <div class="gal-item" data-foto="casa">
-        <span class="ph" style="display:contents;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <div class="cap">La Chilea de la Casa</div>
-          <div class="soon">Foto próximamente</div>
-        </span>
-      </div>
-      <!-- FOTO 4: Del lab a tu mesa (foto del proceso / cocina) -->
-      <div class="gal-item" data-foto="proceso">
-        <span class="ph" style="display:contents;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <div class="cap">Hechas al momento</div>
-          <div class="soon">Foto próximamente</div>
-        </span>
+    <div class="gal-marquee" id="galMarquee">
+      <div class="gal-mtrack" id="galMtrack">
+        <div class="gal-mset" id="galMset"></div>
       </div>
     </div>
-    <div class="gal-dots" id="galDots"></div>
   </section>
 
   <div class="divider"></div>
@@ -369,8 +339,8 @@ footer .adminlink:hover{color:var(--muted);}
       <div class="thanks">¡Gracias por tu orden!<br><span id="etaLine"></span></div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-gold" id="dlPdf">Descargar recibo en PDF</button>
       <button class="btn btn-wa" id="waBtn">Enviar pedido por WhatsApp</button>
+      <button class="btn btn-ghost" id="dlPdf" style="color:#fff; border-color:#55555f;">Descargar recibo en PDF</button>
       <button class="btn btn-ghost" id="closeBtn2" style="color:#fff;">Seguir ordenando</button>
     </div>
   </div>
@@ -386,8 +356,7 @@ const CONFIG = {
   athMovil: "(787) 000-0000",          // TODO: número de ATH Móvil del negocio
   pickupAddress: "Dirección por confirmar",  // TODO
   pickupHours: "Horario por confirmar",      // TODO
-  sheetId: "",            // TODO: ID de la hoja de Google "Menú CHILEA" (la parte larga del enlace)
-  open: true,             // el negocio lo cambia desde la hoja (Ajustes -> abierto)
+  open: true,             // TODO: si cierra, cambiar a false manualmente
   prepMinutes: 20         // TODO: tiempo estimado de preparación para pickup
 };
 
@@ -560,6 +529,9 @@ $("confirmBtn").addEventListener("click",()=>{
   const order = buildOrder();
   showReceipt(order);
   cart = []; renderCart();
+  /* La orden llega al WhatsApp del negocio: se abre solo con el mensaje listo.
+     Si el navegador lo bloquea, el cliente usa el botón del recibo. */
+  window.open(waUrl(order), "_blank");
 });
 
 /* ---------- PDF descargable (se genera en el teléfono, sin servidor) ---------- */
@@ -603,9 +575,7 @@ $("dlPdf").addEventListener("click",()=>{
 });
 
 /* ---------- enviar por WhatsApp ---------- */
-$("waBtn").addEventListener("click",()=>{
-  if(!currentOrder) return;
-  const o = currentOrder;
+function waUrl(o){
   const lines = o.lines.map(l=>`• ${l.qty}x ${l.title} — ${money(l.total)}`).join("\n");
   const msg =
 `Nueva orden #${o.number} — ${fmtDate(o.date)}
@@ -616,153 +586,82 @@ ${lines}
 TOTAL: ${money(o.total)}
 Verificar pago: ${money(o.total)} por ATH Movil de ${o.customer}, nota #${o.number}
 Listo en ~${CONFIG.prepMinutes} min (pickup)`;
-  window.open("https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg), "_blank");
+  return "https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg);
+}
+$("waBtn").addEventListener("click",()=>{
+  if(!currentOrder) return;
+  window.open(waUrl(currentOrder), "_blank");
 });
 
-/* ---------- galería: deslizamiento automático ---------- */
-let galTimer = null;
-function initGallery(){
-  const track = document.querySelector(".gal-scroll");
-  const dotsBox = $("galDots");
-  if(!track || !track.children.length || !dotsBox) return;
-  if(galTimer){ clearInterval(galTimer); galTimer = null; }
-  dotsBox.innerHTML = "";
-  const items = Array.from(track.children);
-  items.forEach((_, i)=>{
-    const d = document.createElement("button");
-    d.type = "button";
-    d.setAttribute("aria-label", "Ver foto " + (i+1));
-    d.addEventListener("click", ()=>go(i, true));
-    dotsBox.appendChild(d);
-  });
-  const dots = Array.from(dotsBox.children);
-  let idx = 0, touching = false;
-  function paint(){
-    dots.forEach((d, j)=>d.classList.toggle("on", j===idx));
-  }
-  function go(i, manual){
-    idx = (i + items.length) % items.length;
-    track.scrollTo({left: items[idx].offsetLeft - track.offsetLeft, behavior:"smooth"});
-    paint();
-    if(manual) restart();
-  }
-  function restart(){
-    if(galTimer) clearInterval(galTimer);
-    galTimer = setInterval(()=>{ if(!touching && !document.hidden) go(idx+1); }, 4000);
-  }
-  track.addEventListener("pointerdown", ()=>{ touching = true; }, {passive:true});
-  window.addEventListener("pointerup", ()=>{ touching = false; }, {passive:true});
-  track.addEventListener("scroll", ()=>{
-    let best = 0, bestD = Infinity;
-    items.forEach((it, i)=>{
-      const d = Math.abs(it.offsetLeft - track.offsetLeft - track.scrollLeft);
-      if(d < bestD){ bestD = d; best = i; }
-    });
-    if(best !== idx){ idx = best; paint(); }
-  }, {passive:true});
-  go(0); restart();
+/* ---------- galería: tira continua en movimiento (estilo auspiciadores del Vacilón) ---------- */
+const CAM_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+function escAttr(s){ return String(s).replace(/"/g,"").replace(/</g,""); }
+/* Fotos de la galería: las que suba el negocio desde el admin (fotos.json).
+   Sin fotos, se muestran los espacios reservados. */
+let galItems = [
+  {titulo:"La Clásica"},
+  {titulo:"Doble Carne"},
+  {titulo:"La Chilea de la Casa"},
+  {titulo:"Hechas al momento"}
+];
+function galCardHTML(f){
+  if(f.url) return '<div class="gal-card has-foto"><img src="'+escAttr(f.url)+'" alt="'+escAttr(f.titulo||"CHILEA BURGER LAB")+'" loading="lazy"></div>';
+  return '<div class="gal-card">'+CAM_SVG+'<div class="cap">'+escAttr(f.titulo)+'</div><div class="soon">Foto próximamente</div></div>';
 }
-/* Convierte enlaces de Google Drive en enlaces directos de imagen */
-function driveDirect(url){
-  const u = String(url).trim();
-  const m = u.match(/\/d\/([-\w]{25,})/) || u.match(/[?&]id=([-\w]{25,})/);
-  if(m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w1200";
-  return u;
-}
-function escAttr(s){ return String(s).replace(/"/g, "").replace(/</g, ""); }
-/* Dibuja las fotos que el negocio pone en la pestaña "Fotos" de la hoja */
-function renderGalleryPhotos(list){
-  const track = document.querySelector(".gal-scroll");
-  if(!track || !list.length) return;
-  track.innerHTML = list.map(f=>
-    `<div class="gal-item has-foto"><img src="${escAttr(f.url)}" alt="${escAttr(f.titulo)}" loading="lazy"></div>`
-  ).join("");
-}
-
-/* ---------- hoja de Google: el negocio maneja su menú sin depender de nadie ----------
-   La hoja "Menú CHILEA" (del hermano) con pestañas:
-     Menu:    categoria | nombre | descripcion | precio   (categoria: burger, extra, salsa)
-     Fotos:   orden | url | titulo   (url: enlace de la foto; puede ser de Google Drive compartido)
-     Ajustes: clave | valor   (abierto, whatsapp, ath_movil, direccion, horario, pin_admin)
-   Compartida como "Cualquier persona con el enlace puede ver". */
-function parseCSV(text){
-  const rows=[]; let row=[], val="", q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
-    if(q){
-      if(c==='"'){ if(text[i+1]==='"'){val+='"';i++;} else q=false; }
-      else val+=c;
-    }else{
-      if(c==='"') q=true;
-      else if(c===','){row.push(val);val="";}
-      else if(c==='\n'){row.push(val);rows.push(row);row=[];val="";}
-      else if(c!=='\r') val+=c;
-    }
-  }
-  if(val!==""||row.length){row.push(val);rows.push(row);}
-  return rows.filter(r=>r.length && r.some(x=>String(x).trim()!==""));
-}
-async function loadFromSheet(){
-  if(!CONFIG.sheetId) return;
+async function loadFotos(){
   try{
-    const base="https://docs.google.com/spreadsheets/d/"+CONFIG.sheetId+"/gviz/tq?tqx=out:csv&sheet=";
-    const get=async tab=>{
-      const r=await fetch(base+encodeURIComponent(tab));
-      if(!r.ok) throw new Error("sheet");
-      return parseCSV(await r.text());
-    };
-    const menu=await get("Menu");
-    const burgers=[],extras=[],salsas=[];
-    menu.slice(1).forEach(r=>{
-      const cat=(r[0]||"").trim().toLowerCase(), nom=(r[1]||"").trim(),
-            des=(r[2]||"").trim(), pre=parseFloat(String(r[3]).replace(/[^0-9.]/g,""));
-      if(!nom) return;
-      if(cat==="burger") burgers.push({id:"sb"+burgers.length,name:nom,desc:des,price:isNaN(pre)?0:pre});
-      else if(cat==="extra") extras.push({id:"se"+extras.length,name:nom,price:isNaN(pre)?0:pre});
-      else if(cat==="salsa") salsas.push(nom);
-    });
-    if(burgers.length){
-      MENU.burgers=burgers; MENU.extras=extras; MENU.salsas=salsas;
-      selBurger=burgers[0].id; selExtras.clear(); selSalsas.clear();
+    const r = await fetch("fotos.json", {cache:"no-store"});
+    if(!r.ok) return;
+    const list = await r.json();
+    if(Array.isArray(list) && list.length){
+      galItems = list.map(f=>({url:f.url, titulo:f.titulo||"CHILEA BURGER LAB"}));
+      renderGalMarquee();
     }
-    try{
-      const aj=await get("Ajustes");
-      aj.slice(1).forEach(r=>{
-        const k=(r[0]||"").trim().toLowerCase(), v=(r[1]||"").trim();
-        if(!k||!v) return;
-        if(k==="abierto") CONFIG.open = !/^(no|cerrado|false|0)/i.test(v);
-        else if(k==="whatsapp") CONFIG.whatsappNumber=v.replace(/\D/g,"");
-        else if(k==="ath_movil") CONFIG.athMovil=v;
-        else if(k==="direccion") CONFIG.pickupAddress=v;
-        else if(k==="horario") CONFIG.pickupHours=v;
-      });
-    }catch(e){}
-    try{
-      const ft=await get("Fotos");
-      const fotos=[];
-      ft.slice(1).forEach(r=>{
-        const url=(r[1]||"").trim(), tit=(r[2]||"").trim();
-        if(url) fotos.push({url: driveDirect(url), titulo: tit || "CHILEA BURGER LAB"});
-      });
-      if(fotos.length){ renderGalleryPhotos(fotos); initGallery(); }
-    }catch(e){}
-    $("pickupAddr").textContent=CONFIG.pickupAddress;
-    $("pickupHours").textContent=CONFIG.pickupHours;
-    applySettings(); renderOptions(); renderCart();
-  }catch(e){ /* sin acceso a la hoja: se usa el menú integrado */ }
+  }catch(e){}
 }
-function applySettings(){
-  let banner=$("openBanner");
-  if(CONFIG.open===false){
-    if(!banner){
-      banner=document.createElement("div");
-      banner.id="openBanner";
-      banner.style.cssText="background:#3a1414;border:1px solid var(--pink);color:#ffb3c6;text-align:center;padding:10px 12px;border-radius:12px;margin:14px 0;font-weight:700;";
-      document.querySelector(".hero").appendChild(banner);
-    }
-    banner.textContent="Cerrado por el momento — vuelve pronto.";
-    ["addBtn","confirmBtn","goDatos","sbBtn"].forEach(id=>{ $(id).disabled=true; });
-  }else if(banner){ banner.remove(); }
+function renderGalMarquee(){
+  const track = $("galMtrack"), box = $("galMarquee");
+  if(!track || !box || !galItems.length) return;
+  const cardsHTML = galItems.map(galCardHTML).join("");
+  function makeHalf(){
+    const h = document.createElement("div"); h.className = "gal-half";
+    for(let k=0;k<3;k++){ h.insertAdjacentHTML("beforeend", cardsHTML); }
+    return h;
+  }
+  track.innerHTML = "";
+  track.appendChild(makeHalf());
+  track.appendChild(makeHalf());
+  if(!box.dataset.bound){
+    box.dataset.bound = "1";
+    const unpause = ()=>track.classList.remove("paused");
+    box.addEventListener("touchstart", ()=>track.classList.add("paused"), {passive:true});
+    box.addEventListener("touchend", unpause);
+    box.addEventListener("touchcancel", unpause);
+    document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) unpause(); });
+    window.addEventListener("pageshow", unpause);
+  }
+  /* Animación en píxeles exactos: en iPad el porcentaje se calculaba mal */
+  let pxStyle = document.getElementById("galPxCss");
+  if(!pxStyle){ pxStyle = document.createElement("style"); pxStyle.id = "galPxCss"; document.head.appendChild(pxStyle); }
+  function tuneGal(){
+    const half = track.children[0];
+    if(!half || !half.children.length) return;
+    const n = half.children.length;
+    const cw = half.children[0].getBoundingClientRect().width;
+    if(!(cw > 0)) return;
+    const cs = window.getComputedStyle(half);
+    let gap = parseFloat(cs.gap); gap = isNaN(gap) ? 14 : gap;
+    let padR = parseFloat(cs.paddingRight); padR = isNaN(padR) ? 14 : padR;
+    const shift = Math.round(n * cw + (n - 1) * gap + padR);
+    const dur = Math.max(8, shift / 89.3).toFixed(2);
+    pxStyle.textContent = "@keyframes galScrollPx{to{transform:translateX(-" + shift + "px)}}";
+    track.style.animationName = "galScrollPx";
+    track.style.animationDuration = dur + "s";
+  }
+  tuneGal();
+  window.addEventListener("load", tuneGal);
+  let rzT = null;
+  window.addEventListener("resize", ()=>{ clearTimeout(rzT); rzT = setTimeout(tuneGal, 250); });
 }
 
 /* ---------- init ---------- */
@@ -770,8 +669,12 @@ $("pickupAddr").textContent = CONFIG.pickupAddress;
 $("pickupHours").textContent = CONFIG.pickupHours;
 renderOptions();
 renderCart();
-initGallery();
-loadFromSheet();
+renderGalMarquee();
+loadFotos();
+/* PWA: instalable y funciona sin internet tras la primera visita */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
 </script>
 </body>
 </html>
