@@ -138,7 +138,12 @@ label.f{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px;}
 .gal-marquee{overflow:hidden; margin-top:4px;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);}
+.gal-marquee.is-static{-webkit-mask-image:none; mask-image:none; overflow:visible;}
 .gal-mtrack{display:flex; width:max-content; animation:galScroll 26s linear infinite;}
+.gal-mtrack.is-static{display:block; width:100%; animation:none;}
+.gal-static{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+.gal-static .gal-card{width:auto;}
+@media(min-width:700px){ .gal-static{grid-template-columns:repeat(4,1fr);} }
 .gal-mset{display:flex; gap:14px; padding-right:14px;}
 .gal-half{display:flex; gap:14px; padding-right:14px; flex:0 0 auto;}
 .gal-card{flex:0 0 auto; width:min(64vw,280px); aspect-ratio:4/3; border-radius:14px;
@@ -626,14 +631,31 @@ async function loadFotos(){
 }
 function renderGalMarquee(){
   const track = $("galMtrack"), box = $("galMarquee");
-  if(!track || !box || !galItems.length) return;
-  const cardsHTML = galItems.map(galCardHTML).join("");
+  if(!track || !box) return;
+  const photos = galItems.filter(f=>f.url);
+  /* Con pocas fotos (o solo los espacios reservados): cuadrícula estática,
+     cada foto en su propio lugar, sin repetirse.
+     Con 4 o más fotos: tira en movimiento continuo. */
+  const useMarquee = photos.length >= 4;
+  const items = photos.length ? photos : galItems;
+  track.innerHTML = "";
+  track.style.animation = "";
+  track.classList.remove("paused");
+  box.classList.toggle("is-static", !useMarquee);
+  track.classList.toggle("is-static", !useMarquee);
+  if(!useMarquee){
+    const grid = document.createElement("div");
+    grid.className = "gal-static";
+    grid.innerHTML = items.map(galCardHTML).join("");
+    track.appendChild(grid);
+    return;
+  }
+  const cardsHTML = items.map(galCardHTML).join("");
   function makeHalf(){
     const h = document.createElement("div"); h.className = "gal-half";
     for(let k=0;k<3;k++){ h.insertAdjacentHTML("beforeend", cardsHTML); }
     return h;
   }
-  track.innerHTML = "";
   track.appendChild(makeHalf());
   track.appendChild(makeHalf());
   if(!box.dataset.bound){
