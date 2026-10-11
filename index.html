@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CHILEA BURGER LAB — Ordena para pickup</title>
+<meta name="description" content="Arma tu hamburguesa, paga por ATH Móvil y recógela. CHILEA BURGER LAB.">
+<link rel="icon" type="image/png" href="logo.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0c0c0e; --surface:#151518; --surface2:#1d1d22; --line:#2a2a31;
+  --gold:#f7b500; --gold-soft:#ffd34d; --pink:#ff2e63;
+  --text:#f5f5f5; --muted:#a9a9b0; --ok:#37d67a; --radius:16px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.5;}
+.wrap{max-width:1080px; margin:0 auto; padding:0 16px 120px;}
+header.top{position:sticky; top:0; z-index:50; background:rgba(12,12,14,.92);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+.top-inner{max-width:1080px; margin:0 auto; padding:10px 16px;
+  display:flex; align-items:center; gap:12px;}
+.top-inner img{height:44px; width:auto;}
+.brand{font-weight:800; letter-spacing:.06em; font-size:15px;}
+.brand small{display:block; font-weight:500; color:var(--muted); font-size:11px; letter-spacing:.14em;}
+.hero{padding:34px 0 10px; text-align:center;}
+.hero h1{margin:14px 0 6px; font-size:clamp(26px,5vw,40px); letter-spacing:.02em;}
+.hero h1 .hl{color:var(--gold);}
+.hero p{color:var(--muted); margin:0 auto 18px; max-width:560px;}
+.hero img.logo-big{width:min(300px,70vw); height:auto;
+  filter:drop-shadow(0 0 22px rgba(247,181,0,.35));}
+.steps{display:flex; gap:8px; justify-content:center; margin:20px 0 6px; flex-wrap:wrap;}
+.step{font-size:12px; color:var(--muted); border:1px solid var(--line);
+  padding:6px 12px; border-radius:999px; background:var(--surface);}
+.step b{color:var(--gold); margin-right:6px;}
+.grid{display:grid; grid-template-columns:1fr; gap:18px; margin-top:18px;}
+@media(min-width:900px){ .grid{grid-template-columns:1.6fr 1fr; align-items:start;} }
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px;}
+.card h2{margin:0 0 4px; font-size:19px;}
+.card h2 .n{display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%; background:var(--gold); color:#111;
+  font-size:14px; margin-right:8px; vertical-align:2px;}
+.card p.sub{color:var(--muted); font-size:13px; margin:0 0 14px;}
+.opt-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+@media(min-width:560px){ .opt-grid.cols3{grid-template-columns:1fr 1fr 1fr;} }
+.opt{border:1.5px solid var(--line); border-radius:12px; padding:12px; cursor:pointer;
+  background:var(--surface2); transition:.15s; position:relative;}
+.opt:hover{border-color:#4a4a55;}
+.opt.sel{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold), 0 0 18px rgba(247,181,0,.25);}
+.opt .nm{font-weight:700; font-size:14px;}
+.opt .ds{font-size:12px; color:var(--muted); margin-top:2px;}
+.opt .pr{color:var(--gold-soft); font-weight:800; margin-top:6px; font-size:15px;}
+.opt input{position:absolute; opacity:0; pointer-events:none;}
+.check{display:inline-block; width:18px; height:18px; border-radius:6px;
+  border:1.5px solid #55555f; margin-right:8px; vertical-align:-3px; position:relative;}
+.opt.sel .check{background:var(--gold); border-color:var(--gold);}
+.opt.sel .check::after{content:""; position:absolute; left:5px; top:1px; width:5px; height:9px;
+  border:solid #111; border-width:0 2.5px 2.5px 0; transform:rotate(45deg);}
+.rowline{display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:10px 0; border-top:1px dashed var(--line);}
+.rowline:first-of-type{border-top:none;}
+.qty{display:flex; align-items:center; gap:12px;}
+.qty button{width:36px; height:36px; border-radius:50%; border:1px solid var(--line);
+  background:var(--surface2); color:var(--text); font-size:20px; cursor:pointer;}
+.qty b{font-size:18px; min-width:24px; text-align:center;}
+textarea,input[type=text],input[type=tel]{width:100%; background:var(--surface2);
+  border:1.5px solid var(--line); border-radius:10px; color:var(--text);
+  padding:11px 12px; font-size:15px; font-family:inherit;}
+textarea:focus,input:focus{outline:none; border-color:var(--gold);}
+label.f{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px;}
+.btn{display:block; width:100%; border:none; cursor:pointer; border-radius:12px;
+  padding:14px; font-size:16px; font-weight:800; letter-spacing:.02em; margin-top:12px;
+  transition:.15s; font-family:inherit;}
+.btn-gold{background:linear-gradient(180deg,var(--gold-soft),var(--gold)); color:#181200;}
+.btn-gold:hover{filter:brightness(1.06);}
+.btn-pink{background:var(--pink); color:#fff;}
+.btn-ghost{background:transparent; border:1.5px solid var(--line); color:var(--text);}
+.btn-wa{background:#22b95c; color:#fff;}
+.btn:disabled{opacity:.45; cursor:not-allowed;}
+.cart-line{display:flex; justify-content:space-between; gap:8px; font-size:14px; padding:8px 0;
+  border-bottom:1px dashed var(--line);}
+.cart-line .x{color:var(--pink); background:none; border:none; cursor:pointer; font-size:15px;}
+.total-row{display:flex; justify-content:space-between; align-items:center;
+  font-size:19px; font-weight:800; padding:12px 0 4px;}
+.total-row span:last-child{color:var(--gold);}
+.hint{font-size:12.5px; color:var(--muted); background:var(--surface2);
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:12px;}
+.hint b{color:var(--gold-soft);}
+.stickybar{position:fixed; left:0; right:0; bottom:0; z-index:60;
+  background:rgba(15,15,18,.96); backdrop-filter:blur(10px);
+  border-top:1px solid var(--line); padding:10px 16px calc(10px + env(safe-area-inset-bottom));}
+.stickybar .in{max-width:1080px; margin:0 auto; display:flex; align-items:center; gap:12px;}
+.stickybar .tt{font-weight:800; font-size:17px;}
+.stickybar .tt small{display:block; font-weight:500; color:var(--muted); font-size:11px;}
+.stickybar .btn{margin:0; flex:1;}
+@media(min-width:900px){ .stickybar{display:none;} }
+/* Receipt modal */
+.overlay{position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.7);
+  display:none; align-items:flex-start; justify-content:center; padding:18px 12px;
+  overflow-y:auto;}
+.overlay.open{display:flex;}
+.receipt{background:#fdfdf8; color:#1c1c1c; border-radius:14px; width:min(430px,100%);
+  padding:26px 22px; font-family:"Courier New",Courier,monospace; position:relative;}
+.receipt h3{margin:0; text-align:center; font-size:19px; letter-spacing:.04em;}
+.receipt .rsub{text-align:center; font-size:12px; color:#555; margin:2px 0 12px;}
+.receipt .rmeta{font-size:12.5px; border-top:2px dashed #999; border-bottom:2px dashed #999;
+  padding:8px 0; margin-bottom:8px;}
+.receipt table{width:100%; border-collapse:collapse; font-size:13px;}
+.receipt td{padding:5px 0; vertical-align:top;}
+.receipt td:last-child{text-align:right; white-space:nowrap;}
+.receipt .rtotal td{font-size:17px; font-weight:bold; border-top:2px dashed #999; padding-top:10px;}
+.receipt .thanks{text-align:center; font-size:12px; color:#555; margin-top:12px;}
+.receipt .paybox{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:#fff8e1; border:1.5px dashed #d9a400; border-radius:10px; padding:10px 12px;
+  margin-top:12px; font-size:13px; color:#5a4300;}
+.modal-actions{display:flex; flex-direction:column; gap:8px; margin-top:14px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+.modal-actions .btn{margin:0;}
+.close-x{position:absolute; top:8px; right:12px; background:none; border:none;
+  font-size:22px; cursor:pointer; color:#666; font-family:sans-serif;}
+.pickup{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px; margin-top:18px; font-size:14px; color:var(--muted);}
+.pickup b{color:var(--text);}
+.recibos-list{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+.recibo-item{display:flex; align-items:center; justify-content:space-between; gap:8px;
+  background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+  font-size:13.5px;}
+.recibo-item .rb small{display:block; color:var(--muted); font-size:11.5px;}
+.recibo-item .acts{display:flex; gap:6px;}
+.mini{border:1px solid var(--line); background:transparent; color:var(--text);
+  border-radius:8px; padding:7px 10px; font-size:12.5px; cursor:pointer;}
+.mini:hover{border-color:var(--gold);}
+.empty{color:var(--muted); font-size:13.5px;}
+footer{margin-top:34px; text-align:center; color:var(--muted); font-size:12.5px;}
+footer img{height:52px; opacity:.95;}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <img src="logo.png" alt="CHILEA BURGER LAB">
+    <div class="brand">CHILEA BURGER LAB<small>ORDENA PARA PICKUP</small></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <img class="logo-big" src="logo.png" alt="CHILEA BURGER LAB">
+    <h1>Arma tu hamburguesa. <span class="hl">Paga por ATH&nbsp;Móvil.</span> Recógela.</h1>
+    <p>Elige cómo la quieres, confirma tu pedido y págalo por adelantado. Cuando llegues, tu comida está lista para pickup.</p>
+    <div class="steps">
+      <span class="step"><b>1</b>Arma tu hamburguesa</span>
+      <span class="step"><b>2</b>Tus datos</span>
+      <span class="step"><b>3</b>Recibo y pago</span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <div>
+      <section class="card" id="sec-builder">
+        <h2><span class="n">1</span>Arma tu hamburguesa</h2>
+        <p class="sub">Elige la base, añade extras y salsas. Todo suma al total en vivo.</p>
+        <label class="f">Hamburguesa base</label>
+        <div class="opt-grid cols3" id="burgers"></div>
+        <label class="f">Extras (se suman al precio)</label>
+        <div class="opt-grid cols3" id="extras"></div>
+        <label class="f">Salsas (incluidas)</label>
+        <div class="opt-grid cols3" id="salsas"></div>
+        <div class="rowline" style="margin-top:8px;">
+          <span style="font-weight:700;">Cantidad</span>
+          <div class="qty">
+            <button type="button" id="qminus" aria-label="Quitar uno">−</button>
+            <b id="qval">1</b>
+            <button type="button" id="qplus" aria-label="Añadir uno">+</button>
+          </div>
+        </div>
+        <label class="f" for="notes">Notas de cocina (opcional)</label>
+        <textarea id="notes" rows="2" placeholder="Ej: término medio, sin cebolla…"></textarea>
+        <button class="btn btn-gold" id="addBtn">Añadir al pedido</button>
+      </section>
+
+      <section class="card" id="sec-datos" style="margin-top:18px;">
+        <h2><span class="n">2</span>Tus datos para el pickup</h2>
+        <p class="sub">Con este nombre identificamos tu pedido al recoger.</p>
+        <label class="f" for="cname">Nombre</label>
+        <input type="text" id="cname" placeholder="Tu nombre" autocomplete="name">
+        <label class="f" for="cphone">Teléfono (opcional)</label>
+        <input type="tel" id="cphone" placeholder="(787) 000-0000" autocomplete="tel">
+        <button class="btn btn-pink" id="confirmBtn">Ver recibo y pagar</button>
+        <div class="hint">Al confirmar verás tu <b>recibo digital</b> con el total, el botón de <b>pagar por ATH&nbsp;Móvil</b> y la opción de <b>descargarlo en PDF</b>.</div>
+      </section>
+
+      <section class="card" id="sec-recibos" style="margin-top:18px;">
+        <h2>Mis recibos</h2>
+        <p class="sub">Tus pedidos anteriores en este teléfono. Tócalo para verlo o descargarlo de nuevo.</p>
+        <div class="recibos-list" id="recibosList"><span class="empty">Aún no tienes recibos guardados.</span></div>
+      </section>
+
+      <div class="pickup">
+        <b>Pickup:</b> <span id="pickupAddr">Dirección por confirmar</span><br>
+        <b>Horario:</b> <span id="pickupHours">Horario por confirmar</span><br>
+        <b>Pago:</b> por ATH&nbsp;Móvil, por adelantado. El negocio confirma tu pago y empieza a preparar tu pedido.
+      </div>
+    </div>
+
+    <aside class="card" id="cartCard" style="position:sticky; top:76px;">
+      <h2>Tu pedido</h2>
+      <p class="sub">Resumen en vivo</p>
+      <div id="cartLines"><span class="empty">Tu pedido está vacío. Arma tu hamburguesa para empezar.</span></div>
+      <div class="total-row"><span>Total</span><span id="cartTotal">$0.00</span></div>
+      <button class="btn btn-gold" id="goDatos">Continuar</button>
+    </aside>
+  </div>
+
+  <footer>
+    <img src="logo.png" alt="CHILEA BURGER LAB"><br>
+    CHILEA BURGER LAB · Ordena online, paga por ATH&nbsp;Móvil y recoge.
+  </footer>
+</div>
+
+<div class="stickybar" id="stickybar">
+  <div class="in">
+    <div class="tt"><span id="sbTotal">$0.00</span><small id="sbCount">0 artículos</small></div>
+    <button class="btn btn-gold" id="sbBtn">Ver pedido</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div style="width:min(430px,100%);">
+    <div class="receipt" id="receipt">
+      <button class="close-x" id="closeReceipt" aria-label="Cerrar">×</button>
+      <h3>CHILEA BURGER LAB</h3>
+      <div class="rsub">Recibo de pedido · Pickup</div>
+      <div class="rmeta" id="rmeta"></div>
+      <table id="rtable"></table>
+      <div class="paybox" id="rpay"></div>
+      <div class="thanks">¡Gracias por tu orden!<br><span id="etaLine"></span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" id="dlPdf">Descargar recibo en PDF</button>
+      <button class="btn btn-wa" id="waBtn">Enviar pedido por WhatsApp</button>
+      <button class="btn btn-ghost" id="closeBtn2" style="color:#fff;">Seguir ordenando</button>
+    </div>
+  </div>
+</div>
+<script>
+/* ============================================================
+   CHILEA BURGER LAB — configuración del negocio
+   TODO: reemplazar los valores marcados con tu información real.
+   ============================================================ */
+const CONFIG = {
+  businessName: "CHILEA BURGER LAB",
+  whatsappNumber: "17870000000",      // TODO: número de WhatsApp del negocio (código país + número, sin +)
+  athMovil: "(787) 000-0000",          // TODO: número de ATH Móvil del negocio
+  pickupAddress: "Dirección por confirmar",  // TODO
+  pickupHours: "Horario por confirmar",      // TODO
+  sheetId: "",            // TODO: ID de la hoja de Google "Menú CHILEA" (la parte larga del enlace)
+  open: true,             // el negocio lo cambia desde la hoja (Ajustes -> abierto)
+  prepMinutes: 20         // TODO: tiempo estimado de preparación para pickup
+};
+
+/* PRECIOS DE EJEMPLO — reemplazar con el menú real del negocio */
+const MENU = {
+  burgers: [
+    { id:"b1", name:"La Clásica", desc:"Carne, lechuga, tomate, cebolla", price:8.99 },
+    { id:"b2", name:"Doble Carne", desc:"Doble carne, doble queso", price:11.99 },
+    { id:"b3", name:"La Chilea de la Casa", desc:"La especialidad del lab", price:12.99 }
+  ],
+  extras: [
+    { id:"e1", name:"Queso extra", price:1.50 },
+    { id:"e2", name:"Tocineta", price:2.00 },
+    { id:"e3", name:"Huevo frito", price:1.50 },
+    { id:"e4", name:"Cebolla crispy", price:1.00 },
+    { id:"e5", name:"Papas del día", price:3.50 }
+  ],
+  salsas: ["Ketchup","Mayonesa","Mostaza","BBQ","Mayo-ketchup"]
+};
+
+const $ = id => document.getElementById(id);
+const money = n => "$" + n.toFixed(2);
+const LS_KEY = "chilea_recibos_v1";
+
+let cart = [];               // líneas del pedido actual
+let selBurger = MENU.burgers[0].id;
+let selExtras = new Set();
+let selSalsas = new Set();
+let qty = 1;
+let currentOrder = null;     // orden mostrada en el recibo
+
+/* ---------- render de opciones ---------- */
+function renderOptions(){
+  $("burgers").innerHTML = MENU.burgers.map(b=>`
+    <label class="opt ${b.id===selBurger?'sel':''}" data-id="${b.id}" data-kind="burger">
+      <input type="radio" name="burger">
+      <div class="nm">${b.name}</div><div class="ds">${b.desc}</div><div class="pr">${money(b.price)}</div>
+    </label>`).join("");
+  $("extras").innerHTML = MENU.extras.map(e=>`
+    <label class="opt ${selExtras.has(e.id)?'sel':''}" data-id="${e.id}" data-kind="extra">
+      <input type="checkbox"><span class="check"></span>
+      <div class="nm" style="display:inline;">${e.name}</div><div class="pr">+${money(e.price)}</div>
+    </label>`).join("");
+  $("salsas").innerHTML = MENU.salsas.map((s,i)=>`
+    <label class="opt ${selSalsas.has(s)?'sel':''}" data-id="${s}" data-kind="salsa">
+      <input type="checkbox"><span class="check"></span>
+      <div class="nm" style="display:inline;">${s}</div>
+    </label>`).join("");
+  document.querySelectorAll(".opt").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const kind = el.dataset.kind, id = el.dataset.id;
+      if(kind==="burger"){ selBurger = id; }
+      if(kind==="extra"){ selExtras.has(id) ? selExtras.delete(id) : selExtras.add(id); }
+      if(kind==="salsa"){ selSalsas.has(id) ? selSalsas.delete(id) : selSalsas.add(id); }
+      renderOptions();
+    });
+  });
+}
+
+/* ---------- carrito ---------- */
+function lineTotal(item){
+  const b = MENU.burgers.find(x=>x.id===item.burgerId);
+  const ex = item.extras.reduce((s,id)=> s + MENU.extras.find(x=>x.id===id).price, 0);
+  return (b.price + ex) * item.qty;
+}
+function cartTotal(){ return cart.reduce((s,it)=> s + lineTotal(it), 0); }
+function cartCount(){ return cart.reduce((s,it)=> s + it.qty, 0); }
+
+function itemDesc(item){
+  const b = MENU.burgers.find(x=>x.id===item.burgerId);
+  const parts = [b.name];
+  if(item.extras.length) parts.push("+" + item.extras.map(id=>MENU.extras.find(x=>x.id===id).name).join(", +"));
+  if(item.salsas.length) parts.push(item.salsas.join(", "));
+  if(item.notes) parts.push("«" + item.notes + "»");
+  return { title: parts.join(" · "), unit: lineTotal(item)/item.qty };
+}
+
+function renderCart(){
+  const box = $("cartLines");
+  if(!cart.length){
+    box.innerHTML = '<span class="empty">Tu pedido está vacío. Arma tu hamburguesa para empezar.</span>';
+  } else {
+    box.innerHTML = cart.map((it,i)=>{
+      const d = itemDesc(it);
+      return `<div class="cart-line">
+        <span><b>${it.qty}×</b> ${d.title}</span>
+        <span>${money(lineTotal(it))} <button class="x" data-i="${i}" aria-label="Quitar">✕</button></span>
+      </div>`;
+    }).join("");
+    box.querySelectorAll(".x").forEach(btn=>btn.addEventListener("click",()=>{
+      cart.splice(+btn.dataset.i,1); renderCart();
+    }));
+  }
+  const t = money(cartTotal());
+  $("cartTotal").textContent = t;
+  $("sbTotal").textContent = t;
+  const c = cartCount();
+  $("sbCount").textContent = c + (c===1 ? " artículo" : " artículos");
+}
+
+/* ---------- añadir al pedido ---------- */
+$("qminus").addEventListener("click",()=>{ if(qty>1){qty--; $("qval").textContent=qty;} });
+$("qplus").addEventListener("click",()=>{ if(qty<20){qty++; $("qval").textContent=qty;} });
+$("addBtn").addEventListener("click",()=>{
+  cart.push({ burgerId: selBurger, extras:[...selExtras], salsas:[...selSalsas],
+              qty: qty, notes: $("notes").value.trim() });
+  selExtras.clear(); selSalsas.clear(); qty = 1;
+  $("qval").textContent = "1"; $("notes").value = "";
+  renderOptions(); renderCart();
+  document.getElementById("cartCard").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+$("goDatos").addEventListener("click",()=>$("sec-datos").scrollIntoView({behavior:"smooth"}));
+$("sbBtn").addEventListener("click",()=>$("cartCard").scrollIntoView({behavior:"smooth"}));
+
+/* ---------- confirmar pedido → recibo ---------- */
+function makeOrderNumber(){
+  const d = new Date();
+  const ymd = String(d.getFullYear()).slice(2)
+    + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0");
+  const r = Math.random().toString(36).slice(2,5).toUpperCase();
+  return "CHB-" + ymd + "-" + r;
+}
+function buildOrder(){
+  return {
+    number: makeOrderNumber(),
+    date: new Date().toISOString(),
+    customer: $("cname").value.trim(),
+    phone: $("cphone").value.trim(),
+    lines: cart.map(it=>{
+      const d = itemDesc(it);
+      return { qty: it.qty, title: d.title, unit: d.unit, total: lineTotal(it) };
+    }),
+    total: cartTotal()
+  };
+}
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString("es-PR",{day:"numeric",month:"short",year:"numeric"})
+       + " " + d.toLocaleTimeString("es-PR",{hour:"numeric",minute:"2-digit"});
+}
+function showReceipt(order){
+  currentOrder = order;
+  $("rmeta").innerHTML =
+    `Orden: <b>${order.number}</b><br>Fecha: ${fmtDate(order.date)}<br>Cliente: <b>${order.customer}</b>` +
+    (order.phone ? `<br>Tel: ${order.phone}` : "");
+  $("rtable").innerHTML = order.lines.map(l=>`
+    <tr><td>${l.qty}× ${l.title}<br><span style="color:#666;">${money(l.unit)} c/u</span></td>
+    <td>${money(l.total)}</td></tr>`).join("") +
+    `<tr class="rtotal"><td>TOTAL</td><td>${money(order.total)}</td></tr>`;
+  $("rpay").innerHTML =
+    `<b>Paga por ATH&nbsp;Móvil al ${CONFIG.athMovil}</b><br>` +
+    `Monto: <b>${money(order.total)}</b> · Escribe tu número de orden <b>${order.number}</b> en la nota del pago.<br>` +
+    `El negocio confirma tu pago y empieza a preparar tu pedido para pickup.`;
+  $("etaLine").textContent = "Listo en ~" + CONFIG.prepMinutes + " minutos para pickup.";
+  $("overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeReceipt(){
+  $("overlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+$("closeReceipt").addEventListener("click", closeReceipt);
+$("closeBtn2").addEventListener("click", closeReceipt);
+$("overlay").addEventListener("click", e=>{ if(e.target===$("overlay")) closeReceipt(); });
+
+$("confirmBtn").addEventListener("click",()=>{
+  if(!cart.length){ alert("Tu pedido está vacío. Arma tu hamburguesa primero."); return; }
+  const name = $("cname").value.trim();
+  if(!name){ alert("Escribe tu nombre para identificar el pedido."); $("cname").focus(); return; }
+  const order = buildOrder();
+  saveReceipt(order);
+  showReceipt(order);
+  cart = []; renderCart();
+});
+
+/* ---------- PDF descargable (se genera en el teléfono, sin servidor) ---------- */
+$("dlPdf").addEventListener("click",()=>{
+  if(!currentOrder) return;
+  const o = currentOrder;
+  try{
+    if(!window.jspdf){ window.print(); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:"pt", format:[320, 520]});
+    let y = 36;
+    doc.setFont("courier","bold"); doc.setFontSize(15);
+    doc.text(CONFIG.businessName, 160, y, {align:"center"}); y += 16;
+    doc.setFontSize(10); doc.setFont("courier","normal");
+    doc.text("Recibo de pedido - Pickup", 160, y, {align:"center"}); y += 20;
+    doc.text("Orden: " + o.number, 20, y); y += 14;
+    doc.text("Fecha: " + fmtDate(o.date), 20, y); y += 14;
+    doc.text("Cliente: " + o.customer, 20, y); y += 18;
+    doc.setDrawColor(150); doc.setLineDashPattern([4,3],0);
+    doc.line(20, y, 300, y); y += 14; doc.setLineDashPattern([],0);
+    doc.setFontSize(10);
+    o.lines.forEach(l=>{
+      const t = l.qty + "x " + l.title;
+      const parts = doc.splitTextToSize(t, 200);
+      doc.text(parts, 20, y); y += parts.length * 12;
+      doc.text(money(l.total), 300, y - 12, {align:"right"});
+      y += 4;
+    });
+    doc.setDrawColor(150); doc.setLineDashPattern([4,3],0);
+    doc.line(20, y, 300, y); y += 18; doc.setLineDashPattern([],0);
+    doc.setFont("courier","bold"); doc.setFontSize(14);
+    doc.text("TOTAL: " + money(o.total), 300, y, {align:"right"}); y += 26;
+    doc.setFont("courier","normal"); doc.setFontSize(9);
+    const pay = doc.splitTextToSize(
+      "Paga por ATH Movil al " + CONFIG.athMovil + " el monto de " + money(o.total) +
+      ". Escribe tu numero de orden " + o.number + " en la nota del pago.", 270);
+    doc.text(pay, 20, y); y += pay.length * 12 + 8;
+    doc.text("Gracias por tu orden. Te esperamos.", 160, y, {align:"center"});
+    doc.save("recibo-" + o.number + ".pdf");
+  }catch(err){ window.print(); }
+});
+
+/* ---------- enviar por WhatsApp ---------- */
+$("waBtn").addEventListener("click",()=>{
+  if(!currentOrder) return;
+  const o = currentOrder;
+  const lines = o.lines.map(l=>`• ${l.qty}x ${l.title} — ${money(l.total)}`).join("\n");
+  const msg =
+`Nueva orden #${o.number} — ${fmtDate(o.date)}
+Cliente: ${o.customer}${o.phone ? " (" + o.phone + ")" : ""}
+--------------------------
+${lines}
+--------------------------
+TOTAL: ${money(o.total)}
+Verificar pago: ${money(o.total)} por ATH Movil de ${o.customer}, nota #${o.number}
+Listo en ~${CONFIG.prepMinutes} min (pickup)`;
+  window.open("https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg), "_blank");
+});
+
+/* ---------- mis recibos (guardados en este teléfono) ---------- */
+function loadReceipts(){
+  try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
+  catch(e){ return []; }
+}
+function saveReceipt(order){
+  try{
+    const all = loadReceipts();
+    all.unshift(order);
+    localStorage.setItem(LS_KEY, JSON.stringify(all.slice(0, 30)));
+    renderRecibos();
+  }catch(e){ /* almacenamiento no disponible: se continúa sin guardar */ }
+}
+function renderRecibos(){
+  const all = loadReceipts();
+  const box = $("recibosList");
+  if(!all.length){ box.innerHTML = '<span class="empty">Aún no tienes recibos guardados.</span>'; return; }
+  box.innerHTML = "";
+  all.forEach((o,i)=>{
+    const div = document.createElement("div");
+    div.className = "recibo-item";
+    div.innerHTML = `<div class="rb"><b>${o.number}</b> · ${money(o.total)}
+      <small>${fmtDate(o.date)} · ${o.customer}</small></div>
+      <div class="acts"><button class="mini" data-a="ver">Ver</button>
+      <button class="mini" data-a="pdf">PDF</button></div>`;
+    div.querySelector('[data-a="ver"]').addEventListener("click",()=>showReceipt(o));
+    div.querySelector('[data-a="pdf"]').addEventListener("click",()=>{ currentOrder = o; $("dlPdf").click(); });
+    box.appendChild(div);
+  });
+}
+
+/* ---------- hoja de Google: el negocio maneja su menú sin depender de nadie ----------
+   La hoja "Menú CHILEA" (del hermano) con pestañas:
+     Menu:    categoria | nombre | descripcion | precio   (categoria: burger, extra, salsa)
+     Ajustes: clave | valor   (abierto, whatsapp, ath_movil, direccion, horario)
+   Compartida como "Cualquier persona con el enlace puede ver". */
+function parseCSV(text){
+  const rows=[]; let row=[], val="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){val+='"';i++;} else q=false; }
+      else val+=c;
+    }else{
+      if(c==='"') q=true;
+      else if(c===','){row.push(val);val="";}
+      else if(c==='\n'){row.push(val);rows.push(row);row=[];val="";}
+      else if(c!=='\r') val+=c;
+    }
+  }
+  if(val!==""||row.length){row.push(val);rows.push(row);}
+  return rows.filter(r=>r.length && r.some(x=>String(x).trim()!==""));
+}
+async function loadFromSheet(){
+  if(!CONFIG.sheetId) return;
+  try{
+    const base="https://docs.google.com/spreadsheets/d/"+CONFIG.sheetId+"/gviz/tq?tqx=out:csv&sheet=";
+    const get=async tab=>{
+      const r=await fetch(base+encodeURIComponent(tab));
+      if(!r.ok) throw new Error("sheet");
+      return parseCSV(await r.text());
+    };
+    const menu=await get("Menu");
+    const burgers=[],extras=[],salsas=[];
+    menu.slice(1).forEach(r=>{
+      const cat=(r[0]||"").trim().toLowerCase(), nom=(r[1]||"").trim(),
+            des=(r[2]||"").trim(), pre=parseFloat(String(r[3]).replace(/[^0-9.]/g,""));
+      if(!nom) return;
+      if(cat==="burger") burgers.push({id:"sb"+burgers.length,name:nom,desc:des,price:isNaN(pre)?0:pre});
+      else if(cat==="extra") extras.push({id:"se"+extras.length,name:nom,price:isNaN(pre)?0:pre});
+      else if(cat==="salsa") salsas.push(nom);
+    });
+    if(burgers.length){
+      MENU.burgers=burgers; MENU.extras=extras; MENU.salsas=salsas;
+      selBurger=burgers[0].id; selExtras.clear(); selSalsas.clear();
+    }
+    try{
+      const aj=await get("Ajustes");
+      aj.slice(1).forEach(r=>{
+        const k=(r[0]||"").trim().toLowerCase(), v=(r[1]||"").trim();
+        if(!k||!v) return;
+        if(k==="abierto") CONFIG.open = !/^(no|cerrado|false|0)/i.test(v);
+        else if(k==="whatsapp") CONFIG.whatsappNumber=v.replace(/\D/g,"");
+        else if(k==="ath_movil") CONFIG.athMovil=v;
+        else if(k==="direccion") CONFIG.pickupAddress=v;
+        else if(k==="horario") CONFIG.pickupHours=v;
+      });
+    }catch(e){}
+    $("pickupAddr").textContent=CONFIG.pickupAddress;
+    $("pickupHours").textContent=CONFIG.pickupHours;
+    applySettings(); renderOptions(); renderCart();
+  }catch(e){ /* sin acceso a la hoja: se usa el menú integrado */ }
+}
+function applySettings(){
+  let banner=$("openBanner");
+  if(CONFIG.open===false){
+    if(!banner){
+      banner=document.createElement("div");
+      banner.id="openBanner";
+      banner.style.cssText="background:#3a1414;border:1px solid var(--pink);color:#ffb3c6;text-align:center;padding:10px 12px;border-radius:12px;margin:14px 0;font-weight:700;";
+      document.querySelector(".hero").appendChild(banner);
+    }
+    banner.textContent="Cerrado por el momento — vuelve pronto.";
+    ["addBtn","confirmBtn","goDatos","sbBtn"].forEach(id=>{ $(id).disabled=true; });
+  }else if(banner){ banner.remove(); }
+}
+
+/* ---------- init ---------- */
+$("pickupAddr").textContent = CONFIG.pickupAddress;
+$("pickupHours").textContent = CONFIG.pickupHours;
+renderOptions();
+renderCart();
+renderRecibos();
+loadFromSheet();
+</script>
+</body>
+</html>
