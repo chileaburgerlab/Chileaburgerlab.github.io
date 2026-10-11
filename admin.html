@@ -34,24 +34,29 @@ h1{font-size:clamp(24px,5vw,32px); margin:26px 0 6px;}
   padding:12px 20px; font-size:15px; font-weight:800; font-family:inherit;
   background:linear-gradient(180deg,var(--gold-soft),var(--gold)); color:#181200;
   text-decoration:none; text-align:center;}
-.btn-ghost{background:transparent; border:1.5px solid var(--line); color:var(--text);}
-input[type=password],input[type=text]{width:100%; background:var(--surface2);
+.btn:disabled{opacity:.5;}
+.btn-danger{background:transparent; border:1.5px solid var(--pink); color:var(--pink);
+  padding:8px 14px; font-size:13px;}
+input[type=password],input[type=text],input[type=file]{width:100%; background:var(--surface2);
   border:1.5px solid var(--line); border-radius:10px; color:var(--text);
-  padding:12px; font-size:16px; font-family:inherit; margin-bottom:10px;}
+  padding:12px; font-size:15px; font-family:inherit; margin-bottom:10px;}
 input:focus{outline:none; border-color:var(--gold);}
-.stat{display:flex; justify-content:space-between; gap:10px; font-size:14px;
-  padding:9px 0; border-bottom:1px dashed var(--line);}
-.stat:last-child{border-bottom:none;}
-.stat b{color:var(--gold-soft);}
-.stat .off{color:var(--pink);}
-.stat .on{color:var(--ok);}
+input[type=file]{padding:10px;}
 .err{color:var(--pink); font-size:13px; min-height:20px; margin:6px 0;}
-.back{display:inline-block; margin-top:22px; color:var(--muted); font-size:13px; text-decoration:none;}
-.back:hover{color:var(--gold-soft);}
+.okmsg{color:var(--ok); font-size:13px; min-height:20px; margin:6px 0;}
 .hidden{display:none !important;}
 .note{font-size:12.5px; color:var(--muted); background:var(--surface2);
   border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:12px;}
 .note b{color:var(--gold-soft);}
+.fotos-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px;}
+.foto-cell{position:relative; border-radius:10px; overflow:hidden; aspect-ratio:1;
+  background:var(--surface2); border:1px solid var(--line);}
+.foto-cell img{width:100%; height:100%; object-fit:cover; display:block;}
+.foto-cell button{position:absolute; top:6px; right:6px; width:28px; height:28px;
+  border-radius:50%; border:none; background:rgba(0,0,0,.65); color:#fff;
+  font-size:15px; cursor:pointer; line-height:1;}
+.back{display:inline-block; margin-top:22px; color:var(--muted); font-size:13px; text-decoration:none;}
+.prog{font-size:13px; color:var(--gold-soft); margin:8px 0;}
 </style>
 </head>
 <body>
@@ -61,7 +66,6 @@ input:focus{outline:none; border-color:var(--gold);}
 </header>
 
 <div class="wrap">
-  <!-- Puerta de entrada -->
   <div id="gate">
     <h1>Panel del negocio</h1>
     <p class="sub">Esta área es solo para el dueño. Escribe tu PIN para entrar.</p>
@@ -69,45 +73,38 @@ input:focus{outline:none; border-color:var(--gold);}
       <input type="password" id="pin" inputmode="numeric" placeholder="PIN de 4 dígitos" maxlength="12">
       <div class="err" id="pinErr"></div>
       <button class="btn" id="pinBtn" style="width:100%;">Entrar</button>
-      <div class="note">¿No tienes el PIN? Pídeselo a quien te configuró la página.</div>
     </div>
   </div>
 
-  <!-- Contenido -->
   <div id="panel" class="hidden">
-    <h1>Hola, jefe 👨‍🍳</h1>
-    <p class="sub">Desde aquí ves cómo está tu página y cómo cambiarla tú mismo.</p>
+    <h1>Mis fotos</h1>
+    <p class="sub">Las fotos que subas aquí salen en la galería de tu página, solas.</p>
 
-    <div class="card">
-      <h2>Estado de tu página</h2>
-      <div id="statusBox"><p>Cargando…</p></div>
+    <div class="card" id="tokenCard">
+      <h2>Paso 1 · Conectar (una sola vez)</h2>
+      <p>Pega tu token de GitHub para que este panel pueda subir las fotos. Se guarda solo en este teléfono, no se envía a nadie más.</p>
+      <input type="password" id="tokenInput" placeholder="Pega tu token aquí">
+      <button class="btn" id="tokenBtn" style="width:100%;">Guardar token</button>
+      <div class="err" id="tokenErr"></div>
+      <div class="okmsg" id="tokenOk"></div>
     </div>
 
-    <div class="card">
-      <h2>1 · Cambiar las fotos</h2>
-      <ol>
-        <li>Sube la foto a tu <b>Google Drive</b> desde el teléfono.</li>
-        <li>Toca los <b>3 puntitos</b> de la foto → <b>Compartir</b> → <b>Copiar enlace</b> (que quede como "Cualquier persona con el enlace").</li>
-        <li>Abre tu hoja <b>Menú CHILEA</b>, pestaña <b>Fotos</b>, y pega el enlace en una fila nueva con su título.</li>
-      </ol>
-      <p>La foto aparece en la galería de la página en unos minutos, sola.</p>
-      <a class="btn" id="sheetBtn" href="#" target="_blank" rel="noopener">Abrir mi hoja</a>
-    </div>
-
-    <div class="card">
-      <h2>2 · Cambiar el menú y los precios</h2>
-      <p>En la misma hoja, pestaña <b>Menu</b>: cada fila es un producto con su categoría (burger, extra, salsa), nombre, descripción y precio. Lo que cambies ahí se refleja en la página.</p>
-    </div>
-
-    <div class="card">
-      <h2>3 · WhatsApp, ATH Móvil, horario y dirección</h2>
-      <p>En la pestaña <b>Ajustes</b> de la hoja: escribe tu número de WhatsApp, tu ATH Móvil, la dirección y el horario. También puedes poner <b>abierto = no</b> para mostrar la página como cerrada.</p>
+    <div class="card hidden" id="fotosCard">
+      <h2>Paso 2 · Subir fotos</h2>
+      <p>Elige una o varias fotos de tus burgers. Usa fotos claras, con buena luz.</p>
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <button class="btn" id="uploadBtn" style="width:100%;">Subir a la galería</button>
+      <div class="prog" id="prog"></div>
+      <div class="err" id="upErr"></div>
+      <div class="okmsg" id="upOk"></div>
+      <h2 style="margin-top:18px;">Fotos actuales</h2>
+      <div class="fotos-grid" id="fotosGrid"><p style="color:var(--muted);font-size:13px;">Cargando…</p></div>
+      <div class="note"><b>Nota:</b> las fotos nuevas tardan unos minutos en verse en la página.</div>
     </div>
 
     <div class="card">
       <h2>Los pedidos te llegan por WhatsApp</h2>
-      <p>Cada orden que un cliente confirma llega directo a tu WhatsApp con el número de orden, el detalle, el total y el nombre del cliente. Ahí verificas el pago por ATH Móvil con el número de orden que el cliente escribió en la nota.</p>
-      <div class="note"><b>Tip:</b> guarda este panel en tus favoritos para entrar rápido.</div>
+      <p>Cada orden que un cliente confirma abre su WhatsApp con el mensaje listo: número de orden, detalle, total y nombre. Ahí verificas el pago por ATH Móvil con el número de orden que el cliente escribió en la nota del pago.</p>
     </div>
 
     <a class="back" href="index.html">← Volver a la página</a>
@@ -115,102 +112,152 @@ input:focus{outline:none; border-color:var(--gold);}
 </div>
 
 <script>
-/* Configuración: el ID se completa cuando se cree la hoja "Menú CHILEA" */
-const SHEET_ID = "";
-const DEFAULT_PIN = "1234";
-
+const ADMIN_PIN = "1234";   // PIN del panel (pídele a tu técnico que lo cambie)
+const OWNER = "chileaburgerlab";
+const REPO = "Chileaburgerlab.github.io";
 const $ = id => document.getElementById(id);
 
-function parseCSV(text){
-  const rows=[]; let row=[], val="", q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
-    if(q){
-      if(c==='"'){ if(text[i+1]==='"'){val+='"';i++;} else q=false; }
-      else val+=c;
-    }else{
-      if(c==='"') q=true;
-      else if(c===','){row.push(val);val="";}
-      else if(c==='\n'){row.push(val);rows.push(row);row=[];val="";}
-      else if(c!=='\r') val+=c;
-    }
-  }
-  if(val!==""||row.length){row.push(val);rows.push(row);}
-  return rows.filter(r=>r.length && r.some(x=>String(x).trim()!==""));
+/* ---------- puerta ---------- */
+function enter(){
+  $("gate").classList.add("hidden");
+  $("panel").classList.remove("hidden");
+  refreshTokenUI();
+  loadFotos();
 }
-async function sheetTab(tab){
-  const r = await fetch("https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?tqx=out:csv&sheet="+encodeURIComponent(tab));
-  if(!r.ok) throw new Error("sheet");
-  return parseCSV(await r.text());
-}
-async function getPin(){
-  if(!SHEET_ID) return DEFAULT_PIN;
-  try{
-    const rows = await sheetTab("Ajustes");
-    for(const r of rows.slice(1)){
-      if((r[0]||"").trim().toLowerCase()==="pin_admin" && (r[1]||"").trim())
-        return (r[1]||"").trim();
-    }
-  }catch(e){}
-  return DEFAULT_PIN;
-}
-async function loadStatus(){
-  const box = $("statusBox");
-  if(!SHEET_ID){
-    box.innerHTML = "<p>La hoja de cálculo aún no está conectada. Cuando esté lista, aquí verás el resumen de tu página.</p>";
-    return;
-  }
-  try{
-    const menu = await sheetTab("Menu");
-    const fotos = await sheetTab("Fotos").catch(()=>[]);
-    const aj = await sheetTab("Ajustes").catch(()=>[]);
-    let abierto = "—", wa = "—", ath = "—";
-    aj.slice(1).forEach(r=>{
-      const k=(r[0]||"").trim().toLowerCase(), v=(r[1]||"").trim();
-      if(k==="abierto") abierto = /^(no|cerrado|false|0)/i.test(v) ? '<span class="off">Cerrado</span>' : '<span class="on">Abierto</span>';
-      else if(k==="whatsapp") wa = v;
-      else if(k==="ath_movil") ath = v;
-    });
-    const nB = menu.slice(1).filter(r=>(r[1]||"").trim()).length;
-    const nF = fotos.slice(1).filter(r=>(r[1]||"").trim()).length;
-    box.innerHTML =
-      `<div class="stat"><span>Estado</span><b>${abierto}</b></div>` +
-      `<div class="stat"><span>Productos en el menú</span><b>${nB}</b></div>` +
-      `<div class="stat"><span>Fotos en la galería</span><b>${nF}</b></div>` +
-      `<div class="stat"><span>WhatsApp</span><b>${wa}</b></div>` +
-      `<div class="stat"><span>ATH Móvil</span><b>${ath}</b></div>`;
-  }catch(e){
-    box.innerHTML = "<p>No se pudo leer la hoja. Revisa que esté compartida como “Cualquier persona con el enlace puede ver”.</p>";
-  }
-}
-
-$("pinBtn").addEventListener("click", async ()=>{
-  const btn = $("pinBtn");
-  btn.disabled = true; btn.textContent = "Verificando…";
-  const pin = await getPin();
-  btn.disabled = false; btn.textContent = "Entrar";
-  if($("pin").value.trim() === pin){
-    try{ sessionStorage.setItem("chilea_admin", "1"); }catch(e){}
+$("pinBtn").addEventListener("click", ()=>{
+  if($("pin").value.trim() === ADMIN_PIN){
+    try{ sessionStorage.setItem("chilea_admin","1"); }catch(e){}
     enter();
   }else{
     $("pinErr").textContent = "PIN incorrecto. Inténtalo de nuevo.";
   }
 });
 $("pin").addEventListener("keydown", e=>{ if(e.key==="Enter") $("pinBtn").click(); });
+try{ if(sessionStorage.getItem("chilea_admin")==="1") enter(); }catch(e){}
 
-function enter(){
-  $("gate").classList.add("hidden");
-  $("panel").classList.remove("hidden");
-  if(SHEET_ID){
-    $("sheetBtn").href = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/edit";
-  }else{
-    $("sheetBtn").outerHTML = '<div class="note">La hoja aún no está conectada. Pide que te la configuren para activar este botón.</div>';
-  }
-  loadStatus();
+/* ---------- GitHub API ---------- */
+function token(){ try{ return localStorage.getItem("chilea_gh_token") || ""; }catch(e){ return ""; } }
+async function gh(method, path, body){
+  const r = await fetch("https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+path, {
+    method,
+    headers:{
+      "Accept":"application/vnd.github+json",
+      "Content-Type":"application/json",
+      "Authorization":"Bearer "+token()
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(!r.ok){ throw new Error("GitHub " + r.status); }
+  return r.json();
 }
-try{
-  if(sessionStorage.getItem("chilea_admin")==="1") enter();
-}catch(e){}
+function refreshTokenUI(){
+  if(token()){
+    $("tokenCard").querySelector("p").innerHTML = "Token guardado en este teléfono <b style='color:var(--ok);'>✓</b>";
+    $("tokenInput").classList.add("hidden");
+    $("tokenBtn").textContent = "Cambiar token";
+    $("fotosCard").classList.remove("hidden");
+  }else{
+    $("fotosCard").classList.add("hidden");
+  }
+}
+$("tokenBtn").addEventListener("click", ()=>{
+  const v = $("tokenInput").value.trim();
+  if(!v && !token()){ $("tokenErr").textContent = "Pega tu token primero."; return; }
+  try{
+    if(v) localStorage.setItem("chilea_gh_token", v);
+    $("tokenErr").textContent = "";
+    $("tokenOk").textContent = "Token guardado.";
+    $("tokenInput").value = "";
+    refreshTokenUI();
+  }catch(e){ $("tokenErr").textContent = "No se pudo guardar en este teléfono."; }
+});
+
+/* ---------- fotos ---------- */
+function fileToB64(file){
+  return new Promise((res, rej)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>res(String(fr.result).split(",")[1]);
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+}
+function safeName(name){
+  const ext = (name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,4) || "jpg";
+  return "foto-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,6) + "." + ext;
+}
+async function getManifest(){
+  try{
+    const f = await gh("GET", "fotos.json");
+    const txt = decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));
+    return {sha:f.sha, list:JSON.parse(txt)};
+  }catch(e){
+    return {sha:null, list:[]};
+  }
+}
+async function loadFotos(){
+  const grid = $("fotosGrid");
+  try{
+    const {list} = await getManifest();
+    if(!list.length){ grid.innerHTML = "<p style='color:var(--muted);font-size:13px;'>Aún no hay fotos. Sube la primera arriba.</p>"; return; }
+    grid.innerHTML = "";
+    list.forEach((f, i)=>{
+      const d = document.createElement("div");
+      d.className = "foto-cell";
+      const img = document.createElement("img");
+      img.src = f.url; img.alt = f.titulo || ("Foto " + (i+1)); img.loading = "lazy";
+      const x = document.createElement("button");
+      x.textContent = "×"; x.setAttribute("aria-label","Quitar foto");
+      x.addEventListener("click", ()=>removeFoto(i));
+      d.appendChild(img); d.appendChild(x);
+      grid.appendChild(d);
+    });
+  }catch(e){
+    grid.innerHTML = "<p style='color:var(--pink);font-size:13px;'>No se pudieron cargar. Revisa el token.</p>";
+  }
+}
+async function removeFoto(i){
+  if(!confirm("¿Quitar esta foto de la galería?")) return;
+  $("upErr").textContent = ""; $("upOk").textContent = "";
+  try{
+    const {sha, list} = await getManifest();
+    list.splice(i,1);
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(list))));
+    await gh("PUT","fotos.json",{message:"Quitar foto de la galería", content, sha});
+    $("upOk").textContent = "Foto quitada. Se actualiza en unos minutos.";
+    loadFotos();
+  }catch(e){ $("upErr").textContent = "No se pudo quitar: " + e.message; }
+}
+$("uploadBtn").addEventListener("click", async ()=>{
+  const files = Array.from($("fileInput").files || []);
+  $("upErr").textContent = ""; $("upOk").textContent = ""; $("prog").textContent = "";
+  if(!files.length){ $("upErr").textContent = "Elige al menos una foto."; return; }
+  if(!token()){ $("upErr").textContent = "Guarda tu token primero (paso 1)."; return; }
+  const btn = $("uploadBtn");
+  btn.disabled = true;
+  try{
+    const {sha, list} = await getManifest();
+    let n = 0;
+    for(const file of files){
+      n++;
+      $("prog").textContent = "Subiendo " + n + " de " + files.length + "…";
+      const b64 = await fileToB64(file);
+      const name = safeName(file.name);
+      await gh("PUT","fotos/"+name,{message:"Subir foto "+name, content:b64});
+      list.push({url:"fotos/"+name, titulo:"CHILEA BURGER LAB"});
+    }
+    $("prog").textContent = "Actualizando galería…";
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(list))));
+    await gh("PUT","fotos.json",{message:"Actualizar galería ("+files.length+" fotos)", content, sha});
+    $("prog").textContent = "";
+    $("upOk").textContent = "¡Listo! Las fotos salen en la página en unos minutos.";
+    $("fileInput").value = "";
+    loadFotos();
+  }catch(e){
+    $("prog").textContent = "";
+    $("upErr").textContent = "Error: " + e.message + ". Revisa el token y tu conexión.";
+  }
+  btn.disabled = false;
+});
 </script>
 </body>
 </html>
