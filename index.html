@@ -362,7 +362,8 @@ const CONFIG = {
   pickupAddress: "Dirección por confirmar",  // TODO
   pickupHours: "Horario por confirmar",      // TODO
   open: true,             // TODO: si cierra, cambiar a false manualmente
-  prepMinutes: 20         // TODO: tiempo estimado de preparación para pickup
+  prepMinutes: 20,        // TODO: tiempo estimado de preparación para pickup
+  apiBase: "https://chilea-api.elvacilondelbsn.workers.dev"  // backend: guarda los pedidos por fecha
 };
 
 /* PRECIOS DE EJEMPLO — reemplazar con el menú real del negocio */
@@ -534,6 +535,20 @@ $("confirmBtn").addEventListener("click",()=>{
   const order = buildOrder();
   showReceipt(order);
   cart = []; renderCart();
+  /* El pedido también se guarda en el backend (por fecha, para el admin).
+     No bloquea: si falla, el WhatsApp sigue siendo el canal principal. */
+  try{
+    const d = new Date();
+    const localDate = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+    fetch(CONFIG.apiBase + "/api/orders", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        number: order.number, date: localDate,
+        customer: order.customer, phone: order.phone,
+        items: order.lines, total: order.total
+      })
+    }).catch(()=>{});
+  }catch(e){}
   /* La orden llega al WhatsApp del negocio: se abre solo con el mensaje listo.
      Si el navegador lo bloquea, el cliente usa el botón del recibo. */
   window.open(waUrl(order), "_blank");
