@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CHILEA BURGER LAB — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{
+  --bg:#0c0c0e; --surface:#151518; --surface2:#1d1d22; --line:#2a2a31;
+  --gold:#f7b500; --gold-soft:#ffd34d; --pink:#ff2e63;
+  --text:#f5f5f5; --muted:#a9a9b0; --ok:#37d67a; --radius:16px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.5;}
+.wrap{max-width:720px; margin:0 auto; padding:0 16px 80px;}
+header.top{border-bottom:1px solid var(--line); padding:14px 16px;
+  display:flex; align-items:center; gap:12px;}
+header.top img{height:40px; width:auto;}
+header.top .t{font-weight:800; letter-spacing:.06em; font-size:15px;}
+header.top .t small{display:block; font-weight:500; color:var(--muted); font-size:11px; letter-spacing:.14em;}
+h1{font-size:clamp(24px,5vw,32px); margin:26px 0 6px;}
+.sub{color:var(--muted); margin:0 0 20px; font-size:14px;}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px; margin-bottom:14px;}
+.card h2{margin:0 0 6px; font-size:17px;}
+.card p{color:var(--muted); font-size:13.5px; margin:0 0 10px;}
+.card ol{color:var(--muted); font-size:13.5px; margin:0 0 10px; padding-left:20px;}
+.card ol li{margin-bottom:6px;}
+.card ol b{color:var(--text);}
+.btn{display:inline-block; border:none; cursor:pointer; border-radius:12px;
+  padding:12px 20px; font-size:15px; font-weight:800; font-family:inherit;
+  background:linear-gradient(180deg,var(--gold-soft),var(--gold)); color:#181200;
+  text-decoration:none; text-align:center;}
+.btn-ghost{background:transparent; border:1.5px solid var(--line); color:var(--text);}
+input[type=password],input[type=text]{width:100%; background:var(--surface2);
+  border:1.5px solid var(--line); border-radius:10px; color:var(--text);
+  padding:12px; font-size:16px; font-family:inherit; margin-bottom:10px;}
+input:focus{outline:none; border-color:var(--gold);}
+.stat{display:flex; justify-content:space-between; gap:10px; font-size:14px;
+  padding:9px 0; border-bottom:1px dashed var(--line);}
+.stat:last-child{border-bottom:none;}
+.stat b{color:var(--gold-soft);}
+.stat .off{color:var(--pink);}
+.stat .on{color:var(--ok);}
+.err{color:var(--pink); font-size:13px; min-height:20px; margin:6px 0;}
+.back{display:inline-block; margin-top:22px; color:var(--muted); font-size:13px; text-decoration:none;}
+.back:hover{color:var(--gold-soft);}
+.hidden{display:none !important;}
+.note{font-size:12.5px; color:var(--muted); background:var(--surface2);
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:12px;}
+.note b{color:var(--gold-soft);}
+</style>
+</head>
+<body>
+<header class="top">
+  <img src="logo.png" alt="CHILEA BURGER LAB">
+  <div class="t">CHILEA BURGER LAB<small>PANEL DEL NEGOCIO</small></div>
+</header>
+
+<div class="wrap">
+  <!-- Puerta de entrada -->
+  <div id="gate">
+    <h1>Panel del negocio</h1>
+    <p class="sub">Esta área es solo para el dueño. Escribe tu PIN para entrar.</p>
+    <div class="card">
+      <input type="password" id="pin" inputmode="numeric" placeholder="PIN de 4 dígitos" maxlength="12">
+      <div class="err" id="pinErr"></div>
+      <button class="btn" id="pinBtn" style="width:100%;">Entrar</button>
+      <div class="note">¿No tienes el PIN? Pídeselo a quien te configuró la página.</div>
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <div id="panel" class="hidden">
+    <h1>Hola, jefe 👨‍🍳</h1>
+    <p class="sub">Desde aquí ves cómo está tu página y cómo cambiarla tú mismo.</p>
+
+    <div class="card">
+      <h2>Estado de tu página</h2>
+      <div id="statusBox"><p>Cargando…</p></div>
+    </div>
+
+    <div class="card">
+      <h2>1 · Cambiar las fotos</h2>
+      <ol>
+        <li>Sube la foto a tu <b>Google Drive</b> desde el teléfono.</li>
+        <li>Toca los <b>3 puntitos</b> de la foto → <b>Compartir</b> → <b>Copiar enlace</b> (que quede como "Cualquier persona con el enlace").</li>
+        <li>Abre tu hoja <b>Menú CHILEA</b>, pestaña <b>Fotos</b>, y pega el enlace en una fila nueva con su título.</li>
+      </ol>
+      <p>La foto aparece en la galería de la página en unos minutos, sola.</p>
+      <a class="btn" id="sheetBtn" href="#" target="_blank" rel="noopener">Abrir mi hoja</a>
+    </div>
+
+    <div class="card">
+      <h2>2 · Cambiar el menú y los precios</h2>
+      <p>En la misma hoja, pestaña <b>Menu</b>: cada fila es un producto con su categoría (burger, extra, salsa), nombre, descripción y precio. Lo que cambies ahí se refleja en la página.</p>
+    </div>
+
+    <div class="card">
+      <h2>3 · WhatsApp, ATH Móvil, horario y dirección</h2>
+      <p>En la pestaña <b>Ajustes</b> de la hoja: escribe tu número de WhatsApp, tu ATH Móvil, la dirección y el horario. También puedes poner <b>abierto = no</b> para mostrar la página como cerrada.</p>
+    </div>
+
+    <div class="card">
+      <h2>Los pedidos te llegan por WhatsApp</h2>
+      <p>Cada orden que un cliente confirma llega directo a tu WhatsApp con el número de orden, el detalle, el total y el nombre del cliente. Ahí verificas el pago por ATH Móvil con el número de orden que el cliente escribió en la nota.</p>
+      <div class="note"><b>Tip:</b> guarda este panel en tus favoritos para entrar rápido.</div>
+    </div>
+
+    <a class="back" href="index.html">← Volver a la página</a>
+  </div>
+</div>
+
+<script>
+/* Configuración: el ID se completa cuando se cree la hoja "Menú CHILEA" */
+const SHEET_ID = "";
+const DEFAULT_PIN = "1234";
+
+const $ = id => document.getElementById(id);
+
+function parseCSV(text){
+  const rows=[]; let row=[], val="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){val+='"';i++;} else q=false; }
+      else val+=c;
+    }else{
+      if(c==='"') q=true;
+      else if(c===','){row.push(val);val="";}
+      else if(c==='\n'){row.push(val);rows.push(row);row=[];val="";}
+      else if(c!=='\r') val+=c;
+    }
+  }
+  if(val!==""||row.length){row.push(val);rows.push(row);}
+  return rows.filter(r=>r.length && r.some(x=>String(x).trim()!==""));
+}
+async function sheetTab(tab){
+  const r = await fetch("https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?tqx=out:csv&sheet="+encodeURIComponent(tab));
+  if(!r.ok) throw new Error("sheet");
+  return parseCSV(await r.text());
+}
+async function getPin(){
+  if(!SHEET_ID) return DEFAULT_PIN;
+  try{
+    const rows = await sheetTab("Ajustes");
+    for(const r of rows.slice(1)){
+      if((r[0]||"").trim().toLowerCase()==="pin_admin" && (r[1]||"").trim())
+        return (r[1]||"").trim();
+    }
+  }catch(e){}
+  return DEFAULT_PIN;
+}
+async function loadStatus(){
+  const box = $("statusBox");
+  if(!SHEET_ID){
+    box.innerHTML = "<p>La hoja de cálculo aún no está conectada. Cuando esté lista, aquí verás el resumen de tu página.</p>";
+    return;
+  }
+  try{
+    const menu = await sheetTab("Menu");
+    const fotos = await sheetTab("Fotos").catch(()=>[]);
+    const aj = await sheetTab("Ajustes").catch(()=>[]);
+    let abierto = "—", wa = "—", ath = "—";
+    aj.slice(1).forEach(r=>{
+      const k=(r[0]||"").trim().toLowerCase(), v=(r[1]||"").trim();
+      if(k==="abierto") abierto = /^(no|cerrado|false|0)/i.test(v) ? '<span class="off">Cerrado</span>' : '<span class="on">Abierto</span>';
+      else if(k==="whatsapp") wa = v;
+      else if(k==="ath_movil") ath = v;
+    });
+    const nB = menu.slice(1).filter(r=>(r[1]||"").trim()).length;
+    const nF = fotos.slice(1).filter(r=>(r[1]||"").trim()).length;
+    box.innerHTML =
+      `<div class="stat"><span>Estado</span><b>${abierto}</b></div>` +
+      `<div class="stat"><span>Productos en el menú</span><b>${nB}</b></div>` +
+      `<div class="stat"><span>Fotos en la galería</span><b>${nF}</b></div>` +
+      `<div class="stat"><span>WhatsApp</span><b>${wa}</b></div>` +
+      `<div class="stat"><span>ATH Móvil</span><b>${ath}</b></div>`;
+  }catch(e){
+    box.innerHTML = "<p>No se pudo leer la hoja. Revisa que esté compartida como “Cualquier persona con el enlace puede ver”.</p>";
+  }
+}
+
+$("pinBtn").addEventListener("click", async ()=>{
+  const btn = $("pinBtn");
+  btn.disabled = true; btn.textContent = "Verificando…";
+  const pin = await getPin();
+  btn.disabled = false; btn.textContent = "Entrar";
+  if($("pin").value.trim() === pin){
+    try{ sessionStorage.setItem("chilea_admin", "1"); }catch(e){}
+    enter();
+  }else{
+    $("pinErr").textContent = "PIN incorrecto. Inténtalo de nuevo.";
+  }
+});
+$("pin").addEventListener("keydown", e=>{ if(e.key==="Enter") $("pinBtn").click(); });
+
+function enter(){
+  $("gate").classList.add("hidden");
+  $("panel").classList.remove("hidden");
+  if(SHEET_ID){
+    $("sheetBtn").href = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/edit";
+  }else{
+    $("sheetBtn").outerHTML = '<div class="note">La hoja aún no está conectada. Pide que te la configuren para activar este botón.</div>';
+  }
+  loadStatus();
+}
+try{
+  if(sessionStorage.getItem("chilea_admin")==="1") enter();
+}catch(e){}
+</script>
+</body>
+</html>
