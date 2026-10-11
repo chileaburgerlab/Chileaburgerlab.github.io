@@ -27,27 +27,46 @@ h1{font-size:clamp(24px,5vw,32px); margin:26px 0 6px;}
   padding:18px; margin-bottom:14px;}
 .card h2{margin:0 0 6px; font-size:17px;}
 .card p{color:var(--muted); font-size:13.5px; margin:0 0 10px;}
-.card ol{color:var(--muted); font-size:13.5px; margin:0 0 10px; padding-left:20px;}
-.card ol li{margin-bottom:6px;}
-.card ol b{color:var(--text);}
 .btn{display:inline-block; border:none; cursor:pointer; border-radius:12px;
   padding:12px 20px; font-size:15px; font-weight:800; font-family:inherit;
   background:linear-gradient(180deg,var(--gold-soft),var(--gold)); color:#181200;
   text-decoration:none; text-align:center;}
 .btn:disabled{opacity:.5;}
 .btn-danger{background:transparent; border:1.5px solid var(--pink); color:var(--pink);
-  padding:8px 14px; font-size:13px;}
-input[type=password],input[type=text],input[type=file]{width:100%; background:var(--surface2);
+  padding:8px 14px; font-size:13px; border-radius:10px; cursor:pointer; font-family:inherit;}
+.btn-ghost{background:transparent; border:1px solid var(--line); color:var(--muted);
+  padding:10px 16px; font-size:13px; border-radius:10px; cursor:pointer; font-family:inherit;}
+input,select{width:100%; background:var(--surface2);
   border:1.5px solid var(--line); border-radius:10px; color:var(--text);
   padding:12px; font-size:15px; font-family:inherit; margin-bottom:10px;}
-input:focus{outline:none; border-color:var(--gold);}
+input:focus,select:focus{outline:none; border-color:var(--gold);}
 input[type=file]{padding:10px;}
 .err{color:var(--pink); font-size:13px; min-height:20px; margin:6px 0;}
 .okmsg{color:var(--ok); font-size:13px; min-height:20px; margin:6px 0;}
 .hidden{display:none !important;}
-.note{font-size:12.5px; color:var(--muted); background:var(--surface2);
-  border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:12px;}
-.note b{color:var(--gold-soft);}
+.tabs{display:flex; gap:8px; margin:18px 0;}
+.tab{flex:1; padding:13px; border-radius:12px; border:1.5px solid var(--line);
+  background:var(--surface); color:var(--muted); font-weight:800; font-size:14px;
+  letter-spacing:.08em; cursor:pointer; font-family:inherit;}
+.tab.active{border-color:var(--gold); color:var(--gold-soft); background:var(--surface2);}
+.daybar{display:flex; gap:10px; align-items:center; margin-bottom:12px;}
+.daybar input{margin:0;}
+.summary{display:flex; gap:10px; margin-bottom:14px;}
+.sum{flex:1; background:var(--surface2); border:1px solid var(--line); border-radius:12px;
+  padding:12px; text-align:center;}
+.sum .v{font-size:22px; font-weight:800; color:var(--gold-soft);}
+.sum .l{font-size:11px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase;}
+.order{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 16px; margin-bottom:10px;}
+.order .oh{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+.order .on{font-weight:800; font-size:16px; color:var(--gold-soft);}
+.order .ot{font-size:12px; color:var(--muted);}
+.order .oc{font-size:14px; margin-bottom:6px;}
+.order ul{margin:6px 0; padding-left:18px; font-size:13.5px; color:var(--muted);}
+.order .ototal{display:flex; justify-content:space-between; align-items:center;
+  border-top:1px dashed var(--line); margin-top:8px; padding-top:8px;}
+.order .ototal b{font-size:17px;}
+.empty{color:var(--muted); text-align:center; padding:30px 10px; font-size:14px;}
 .fotos-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px;}
 .foto-cell{position:relative; border-radius:10px; overflow:hidden; aspect-ratio:1;
   background:var(--surface2); border:1px solid var(--line);}
@@ -58,8 +77,14 @@ input[type=file]{padding:10px;}
 .foto-badge{position:absolute; left:6px; bottom:6px; background:rgba(0,0,0,.65);
   color:var(--gold-soft); font-size:10px; font-weight:700; letter-spacing:.08em;
   text-transform:uppercase; padding:4px 8px; border-radius:99px;}
-.back{display:inline-block; margin-top:22px; color:var(--muted); font-size:13px; text-decoration:none;}
 .prog{font-size:13px; color:var(--gold-soft); margin:8px 0;}
+.topbar{display:flex; justify-content:space-between; align-items:center; margin:18px 0 4px;}
+.topbar h1{margin:0;}
+.seg{display:flex; gap:8px; margin-bottom:10px;}
+.seg label{flex:1; text-align:center; padding:11px; border-radius:10px; border:1.5px solid var(--line);
+  color:var(--muted); font-size:13.5px; font-weight:700; cursor:pointer;}
+.seg input{display:none;}
+.seg input:checked + label{border-color:var(--gold); color:var(--gold-soft); background:var(--surface2);}
 </style>
 </head>
 <body>
@@ -67,208 +92,252 @@ input[type=file]{padding:10px;}
   <img src="logo.png" alt="CHILEA BURGER LAB">
   <div class="t">CHILEA BURGER LAB<small>PANEL DEL NEGOCIO</small></div>
 </header>
-
 <div class="wrap">
-  <div id="gate">
-    <h1>Panel del negocio</h1>
-    <p class="sub">Esta área es solo para el dueño. Escribe tu PIN para entrar.</p>
+
+  <!-- LOGIN -->
+  <div id="loginView">
+    <h1>Entrar</h1>
+    <p class="sub">Panel privado del negocio.</p>
     <div class="card">
-      <input type="password" id="pin" inputmode="numeric" placeholder="PIN de 4 dígitos" maxlength="12">
-      <div class="err" id="pinErr"></div>
-      <button class="btn" id="pinBtn" style="width:100%;">Entrar</button>
+      <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
+      <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+      <div class="err" id="loginErr"></div>
+      <button class="btn" id="loginBtn" style="width:100%;">Entrar</button>
     </div>
   </div>
 
-  <div id="panel" class="hidden">
-    <h1>Mis fotos</h1>
-    <p class="sub">Las fotos que subas aquí salen en la galería de tu página, solas.</p>
-
-    <div class="card" id="tokenCard">
-      <h2>Paso 1 · Conectar (una sola vez)</h2>
-      <p>Pega tu token de GitHub para que este panel pueda subir las fotos. Se guarda solo en este teléfono, no se envía a nadie más.</p>
-      <input type="password" id="tokenInput" placeholder="Pega tu token aquí">
-      <button class="btn" id="tokenBtn" style="width:100%;">Guardar token</button>
-      <div class="err" id="tokenErr"></div>
-      <div class="okmsg" id="tokenOk"></div>
+  <!-- PANEL -->
+  <div id="panelView" class="hidden">
+    <div class="topbar">
+      <h1>Panel</h1>
+      <button class="btn-ghost" id="logoutBtn">Salir</button>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tabPedidos">PEDIDOS</button>
+      <button class="tab" id="tabFotos">FOTOS</button>
     </div>
 
-    <div class="card hidden" id="fotosCard">
-      <h2>Paso 2 · Subir fotos</h2>
-      <p>Elige una o varias fotos de tus burgers. Usa fotos claras, con buena luz.</p>
-      <input type="file" id="fileInput" accept="image/*" multiple>
-      <label for="destSelect" style="display:block;font-size:13px;color:var(--muted);margin:2px 0 6px;">¿Dónde se muestra esta foto?</label>
-      <select id="destSelect" style="width:100%;background:var(--surface2);border:1.5px solid var(--line);border-radius:10px;color:var(--text);padding:12px;font-size:15px;font-family:inherit;margin-bottom:10px;">
-        <option value="galeria">En la galería en movimiento</option>
-        <option value="menu">En el menú</option>
-      </select>
-      <button class="btn" id="uploadBtn" style="width:100%;">Subir foto(s)</button>
-      <div class="prog" id="prog"></div>
-      <div class="err" id="upErr"></div>
-      <div class="okmsg" id="upOk"></div>
-      <h2 style="margin-top:18px;">Fotos actuales</h2>
-      <div class="fotos-grid" id="fotosGrid"><p style="color:var(--muted);font-size:13px;">Cargando…</p></div>
-      <div class="note"><b>Nota:</b> las fotos nuevas tardan unos minutos en verse en la página.</div>
+    <!-- PEDIDOS -->
+    <div id="panePedidos">
+      <div class="daybar">
+        <input type="date" id="orderDate">
+        <button class="btn" id="reloadOrders" style="white-space:nowrap;">Ver</button>
+      </div>
+      <div class="summary">
+        <div class="sum"><div class="v" id="sumCount">–</div><div class="l">Pedidos</div></div>
+        <div class="sum"><div class="v" id="sumTotal">–</div><div class="l">Total del día</div></div>
+      </div>
+      <div id="ordersList"></div>
     </div>
 
-    <div class="card">
-      <h2>Los pedidos te llegan por WhatsApp</h2>
-      <p>Cada orden que un cliente confirma abre su WhatsApp con el mensaje listo: número de orden, detalle, total y nombre. Ahí verificas el pago por ATH Móvil con el número de orden que el cliente escribió en la nota del pago.</p>
+    <!-- FOTOS -->
+    <div id="paneFotos" class="hidden">
+      <div class="card">
+        <h2>Subir foto</h2>
+        <p>Se publica sola en la página. Sin tokens ni complicaciones.</p>
+        <div class="seg">
+          <input type="radio" name="seccion" id="secGal" value="galeria" checked><label for="secGal">Galería en movimiento</label>
+          <input type="radio" name="seccion" id="secMenu" value="menu"><label for="secMenu">Menú</label>
+        </div>
+        <input type="text" id="fotoTitulo" placeholder="Título (opcional)">
+        <input type="file" id="fotoFile" accept="image/*">
+        <div class="prog" id="upProg"></div>
+        <div class="err" id="upErr"></div>
+        <div class="okmsg" id="upOk"></div>
+        <button class="btn" id="upBtn" style="width:100%;">Subir foto</button>
+      </div>
+      <div class="card">
+        <h2>Fotos publicadas</h2>
+        <div class="fotos-grid" id="fotosGrid"></div>
+      </div>
     </div>
-
-    <a class="back" href="index.html">← Volver a la página</a>
   </div>
+
 </div>
 
 <script>
-const ADMIN_PIN = "1234";   // PIN del panel (pídele a tu técnico que lo cambie)
-const OWNER = "chileaburgerlab";
-const REPO = "Chileaburgerlab.github.io";
+const API = "https://chilea-api.elvacilondelbsn.workers.dev";
 const $ = id => document.getElementById(id);
+const money = n => "$" + (parseFloat(n) || 0).toFixed(2);
 
-/* ---------- puerta ---------- */
-function enter(){
-  $("gate").classList.add("hidden");
-  $("panel").classList.remove("hidden");
-  refreshTokenUI();
-  loadFotos();
+function authHeaders(){
+  const t = localStorage.getItem("chilea_admin_token") || "";
+  return t ? {"Authorization": "Bearer " + t} : {};
 }
-$("pinBtn").addEventListener("click", ()=>{
-  if($("pin").value.trim() === ADMIN_PIN){
-    try{ sessionStorage.setItem("chilea_admin","1"); }catch(e){}
-    enter();
-  }else{
-    $("pinErr").textContent = "PIN incorrecto. Inténtalo de nuevo.";
-  }
-});
-$("pin").addEventListener("keydown", e=>{ if(e.key==="Enter") $("pinBtn").click(); });
-try{ if(sessionStorage.getItem("chilea_admin")==="1") enter(); }catch(e){}
-
-/* ---------- GitHub API ---------- */
-function token(){ try{ return localStorage.getItem("chilea_gh_token") || ""; }catch(e){ return ""; } }
-async function gh(method, path, body){
-  const r = await fetch("https://api.github.com/repos/"+OWNER+"/"+REPO+"/contents/"+path, {
-    method,
-    headers:{
-      "Accept":"application/vnd.github+json",
-      "Content-Type":"application/json",
-      "Authorization":"Bearer "+token()
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
-  if(!r.ok){ throw new Error("GitHub " + r.status); }
+async function api(path, opts){
+  opts = opts || {};
+  opts.headers = Object.assign({}, opts.headers || {}, authHeaders());
+  const r = await fetch(API + path, opts);
+  if(r.status === 401){ logout(); throw new Error("Sesión vencida"); }
   return r.json();
 }
-function refreshTokenUI(){
-  if(token()){
-    $("tokenCard").querySelector("p").innerHTML = "Token guardado en este teléfono <b style='color:var(--ok);'>✓</b>";
-    $("tokenInput").classList.add("hidden");
-    $("tokenBtn").textContent = "Cambiar token";
-    $("fotosCard").classList.remove("hidden");
-  }else{
-    $("fotosCard").classList.add("hidden");
-  }
-}
-$("tokenBtn").addEventListener("click", ()=>{
-  const v = $("tokenInput").value.trim();
-  if(!v && !token()){ $("tokenErr").textContent = "Pega tu token primero."; return; }
-  try{
-    if(v) localStorage.setItem("chilea_gh_token", v);
-    $("tokenErr").textContent = "";
-    $("tokenOk").textContent = "Token guardado.";
-    $("tokenInput").value = "";
-    refreshTokenUI();
-  }catch(e){ $("tokenErr").textContent = "No se pudo guardar en este teléfono."; }
-});
 
-/* ---------- fotos ---------- */
-function fileToB64(file){
-  return new Promise((res, rej)=>{
-    const fr = new FileReader();
-    fr.onload = ()=>res(String(fr.result).split(",")[1]);
-    fr.onerror = rej;
-    fr.readAsDataURL(file);
-  });
-}
-function safeName(name){
-  const ext = (name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,4) || "jpg";
-  return "foto-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,6) + "." + ext;
-}
-async function getManifest(){
+/* ---------- login ---------- */
+async function doLogin(){
+  const u = $("loginUser").value.trim(), p = $("loginPass").value;
+  $("loginErr").textContent = "";
+  if(!u || !p){ $("loginErr").textContent = "Escribe usuario y contraseña."; return; }
+  $("loginBtn").disabled = true;
   try{
-    const f = await gh("GET", "fotos.json");
-    const txt = decodeURIComponent(escape(atob(f.content.replace(/\n/g,""))));
-    return {sha:f.sha, list:JSON.parse(txt)};
-  }catch(e){
-    return {sha:null, list:[]};
-  }
+    const r = await fetch(API + "/api/admin/login", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({user: u, pass: p})
+    });
+    const d = await r.json();
+    if(d.ok && d.token){
+      localStorage.setItem("chilea_admin_token", d.token);
+      showPanel();
+    }else{
+      $("loginErr").textContent = "Usuario o contraseña incorrectos.";
+    }
+  }catch(e){ $("loginErr").textContent = "No se pudo conectar. Revisa tu internet."; }
+  $("loginBtn").disabled = false;
 }
-async function loadFotos(){
-  const grid = $("fotosGrid");
+function logout(){
+  localStorage.removeItem("chilea_admin_token");
+  $("panelView").classList.add("hidden");
+  $("loginView").classList.remove("hidden");
+  $("loginPass").value = "";
+}
+function showPanel(){
+  $("loginView").classList.add("hidden");
+  $("panelView").classList.remove("hidden");
+  const d = new Date();
+  $("orderDate").value = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  loadOrders();
+  loadFotos();
+}
+$("loginBtn").addEventListener("click", doLogin);
+$("loginPass").addEventListener("keydown", e=>{ if(e.key === "Enter") doLogin(); });
+$("logoutBtn").addEventListener("click", logout);
+
+/* ---------- pestañas ---------- */
+function showTab(which){
+  $("tabPedidos").classList.toggle("active", which === "pedidos");
+  $("tabFotos").classList.toggle("active", which === "fotos");
+  $("panePedidos").classList.toggle("hidden", which !== "pedidos");
+  $("paneFotos").classList.toggle("hidden", which !== "fotos");
+}
+$("tabPedidos").addEventListener("click", ()=>showTab("pedidos"));
+$("tabFotos").addEventListener("click", ()=>showTab("fotos"));
+
+/* ---------- pedidos ---------- */
+function fmtHora(iso){
   try{
-    const {list} = await getManifest();
-    if(!list.length){ grid.innerHTML = "<p style='color:var(--muted);font-size:13px;'>Aún no hay fotos. Sube la primera arriba.</p>"; return; }
-    grid.innerHTML = "";
-    list.forEach((f, i)=>{
-      const d = document.createElement("div");
-      d.className = "foto-cell";
-      const img = document.createElement("img");
-      img.src = f.url; img.alt = f.titulo || ("Foto " + (i+1)); img.loading = "lazy";
-      const badge = document.createElement("span");
-      badge.className = "foto-badge";
-      badge.textContent = (f.seccion === "menu") ? "Menú" : "Galería";
-      const x = document.createElement("button");
-      x.textContent = "×"; x.setAttribute("aria-label","Quitar foto");
-      x.addEventListener("click", ()=>removeFoto(i));
-      d.appendChild(img); d.appendChild(badge); d.appendChild(x);
-      grid.appendChild(d);
+    return new Date(iso).toLocaleTimeString("es-PR",{hour:"numeric",minute:"2-digit"});
+  }catch(e){ return ""; }
+}
+async function loadOrders(){
+  const date = $("orderDate").value;
+  $("ordersList").innerHTML = '<div class="empty">Cargando…</div>';
+  try{
+    const d = await api("/api/admin/orders?date=" + encodeURIComponent(date));
+    $("sumCount").textContent = d.count;
+    $("sumTotal").textContent = money(d.dayTotal);
+    if(!d.orders.length){
+      $("ordersList").innerHTML = '<div class="empty">No hay pedidos para este día.</div>';
+      return;
+    }
+    $("ordersList").innerHTML = d.orders.map(o=>`
+      <div class="order">
+        <div class="oh"><span class="on">#${o.number}</span><span class="ot">${fmtHora(o.created_at)}</span></div>
+        <div class="oc"><b>${escapeHtml(o.customer || "Sin nombre")}</b>${o.phone ? " · " + escapeHtml(o.phone) : ""}</div>
+        <ul>${(o.items||[]).map(it=>`<li>${it.qty}× ${escapeHtml(it.title)} — ${money(it.total)}</li>`).join("")}</ul>
+        <div class="ototal"><b>${money(o.total)}</b><button class="btn-danger" data-del="${o.id}">Borrar</button></div>
+      </div>`).join("");
+    $("ordersList").querySelectorAll("[data-del]").forEach(b=>{
+      b.addEventListener("click", async ()=>{
+        if(!confirm("¿Borrar este pedido?")) return;
+        await api("/api/admin/orders/" + b.dataset.del, {method: "DELETE"});
+        loadOrders();
+      });
     });
   }catch(e){
-    grid.innerHTML = "<p style='color:var(--pink);font-size:13px;'>No se pudieron cargar. Revisa el token.</p>";
+    $("ordersList").innerHTML = '<div class="empty">No se pudo cargar. Revisa tu internet.</div>';
   }
 }
-async function removeFoto(i){
-  if(!confirm("¿Quitar esta foto de la galería?")) return;
+$("reloadOrders").addEventListener("click", loadOrders);
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* ---------- fotos ---------- */
+function resizeImage(file){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if(Math.max(w, h) > MAX){
+        const k = MAX / Math.max(w, h);
+        w = Math.round(w * k); h = Math.round(h * k);
+      }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      c.toBlob(b=>b ? resolve(b) : reject(new Error("no blob")), "image/jpeg", 0.82);
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+$("upBtn").addEventListener("click", async ()=>{
+  const f = $("fotoFile").files[0];
   $("upErr").textContent = ""; $("upOk").textContent = "";
+  if(!f){ $("upErr").textContent = "Elige una foto primero."; return; }
+  $("upBtn").disabled = true;
   try{
-    const {sha, list} = await getManifest();
-    list.splice(i,1);
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(list))));
-    await gh("PUT","fotos.json",{message:"Quitar foto de la galería", content, sha});
-    $("upOk").textContent = "Foto quitada. Se actualiza en unos minutos.";
-    loadFotos();
-  }catch(e){ $("upErr").textContent = "No se pudo quitar: " + e.message; }
-}
-$("uploadBtn").addEventListener("click", async ()=>{
-  const files = Array.from($("fileInput").files || []);
-  $("upErr").textContent = ""; $("upOk").textContent = ""; $("prog").textContent = "";
-  if(!files.length){ $("upErr").textContent = "Elige al menos una foto."; return; }
-  if(!token()){ $("upErr").textContent = "Guarda tu token primero (paso 1)."; return; }
-  const btn = $("uploadBtn");
-  btn.disabled = true;
-  try{
-    const {sha, list} = await getManifest();
-    let n = 0;
-    for(const file of files){
-      n++;
-      $("prog").textContent = "Subiendo " + n + " de " + files.length + "…";
-      const b64 = await fileToB64(file);
-      const name = safeName(file.name);
-      await gh("PUT","fotos/"+name,{message:"Subir foto "+name, content:b64});
-      list.push({url:"fotos/"+name, titulo:"CHILEA BURGER LAB", seccion:$("destSelect").value});
+    $("upProg").textContent = "Optimizando…";
+    const blob = await resizeImage(f);
+    const seccion = document.querySelector('input[name="seccion"]:checked').value;
+    const fd = new FormData();
+    fd.append("photo", blob, "foto.jpg");
+    fd.append("seccion", seccion);
+    fd.append("titulo", $("fotoTitulo").value.trim());
+    $("upProg").textContent = "Subiendo…";
+    const r = await fetch(API + "/api/admin/photos", {
+      method: "POST", headers: authHeaders(), body: fd
+    });
+    if(r.status === 401){ logout(); return; }
+    const d = await r.json();
+    if(d.ok){
+      $("upOk").textContent = "Foto publicada.";
+      $("fotoFile").value = ""; $("fotoTitulo").value = "";
+      loadFotos();
+    }else{
+      $("upErr").textContent = d.error || "No se pudo subir.";
     }
-    $("prog").textContent = "Actualizando galería…";
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(list))));
-    await gh("PUT","fotos.json",{message:"Actualizar galería ("+files.length+" fotos)", content, sha});
-    $("prog").textContent = "";
-    $("upOk").textContent = "¡Listo! Las fotos salen en la página en unos minutos.";
-    $("fileInput").value = "";
-    loadFotos();
-  }catch(e){
-    $("prog").textContent = "";
-    $("upErr").textContent = "Error: " + e.message + ". Revisa el token y tu conexión.";
-  }
-  btn.disabled = false;
+  }catch(e){ $("upErr").textContent = "No se pudo conectar. Revisa tu internet."; }
+  $("upProg").textContent = "";
+  $("upBtn").disabled = false;
 });
+async function loadFotos(){
+  try{
+    const d = await api("/api/admin/photos");
+    const list = d.photos || [];
+    if(!list.length){
+      $("fotosGrid").innerHTML = '<div class="empty" style="grid-column:1/-1;">Aún no hay fotos.</div>';
+      return;
+    }
+    $("fotosGrid").innerHTML = list.map((p, i)=>`
+      <div class="foto-cell">
+        <img src="https://chileaburgerlab.github.io/${p.url}" alt="" loading="lazy">
+        <span class="foto-badge">${p.seccion === "menu" ? "Menú" : "Galería"}</span>
+        <button data-fdel="${i}" aria-label="Quitar">×</button>
+      </div>`).join("");
+    $("fotosGrid").querySelectorAll("[data-fdel]").forEach(b=>{
+      b.addEventListener("click", async ()=>{
+        if(!confirm("¿Quitar esta foto de la página?")) return;
+        await api("/api/admin/photos?index=" + b.dataset.fdel, {method: "DELETE"});
+        loadFotos();
+      });
+    });
+  }catch(e){ /* silencioso */ }
+}
+
+/* ---------- init ---------- */
+if(localStorage.getItem("chilea_admin_token")){ showPanel(); }
 </script>
 </body>
 </html>
